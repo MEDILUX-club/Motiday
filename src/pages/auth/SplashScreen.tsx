@@ -1,0 +1,13 @@
+import PageLayout from '../../components/layout/PageLayout';
+import logo from '../../assets/images/img_Motiday.png';
+
+const SplashScreen = () => (
+  <PageLayout padded={false} className="items-center justify-center">
+    <div className="flex flex-col items-center justify-center gap-4">
+      <img src={logo} alt="MOTIDAY logo" className="h-24 w-24 object-contain filter grayscale" />
+      <p className="text-2xl font-bold tracking-wide text-gray-900">MOTIDAY</p>
+    </div>
+  </PageLayout>
+);
+
+export default SplashScreen;
