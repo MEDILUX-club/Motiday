@@ -1,25 +1,18 @@
 @import "tailwindcss";
 
 :root {
-  font-family: 'Noto Sans KR', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  color: #1f2937;
-  background-color: #ffffff;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+  font-family: 'Pretendard', sans-serif;
+  /* 모바일에서 터치할 때 파란색 박스 생기는 것 방지 */
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
-  background-color: #ffffff;
+  padding: 0;
+  /* 배경은 PageLayout이 알아서 하므로 여기서 흰색 지정 안 해도 됨 */
 }
 
-#root {
-  min-height: 100dvh;
-  background-color: #ffffff;
-}
+/* 스크롤바 숨기기 (선택 사항) 
+::-webkit-scrollbar {
+  display: none;
+}*/

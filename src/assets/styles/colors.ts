@@ -1,4 +1,3 @@
-// Placeholder palette; replace hex values with final Figma tokens when ready.
 export const colors = {
   gray: {
     100: '#FAFAFA',
