@@ -6,6 +6,7 @@ import type { TabType } from '../../components/common/TopTabBar';
 
 // 이미지 import
 import logo from '../../assets/images/img_Motiday.png';
+import iconSetting from '../../assets/images/img_Setting.png';
 
 const HomePage = () => {
   // 현재 선택된 탭 상태 관리
@@ -18,8 +19,8 @@ const HomePage = () => {
         // 왼쪽: 로고
         left={<img src={logo} alt="logo" className="h-8 w-8 object-contain" />}
         
-        // 오른쪽: 설정 아이콘 (일단 텍스트로 대체)
-        right={<button className="text-2xl">⚙️</button>}
+        // 오른쪽: 설정 아이콘
+        right={<img src={iconSetting} alt="setting" className="h-6 w-6 object-contain" />}
       />
 
       {/* 2. 상단 탭바 조립 */}
@@ -30,9 +31,9 @@ const HomePage = () => {
 
       {/* 3. 메인 컨텐츠 (탭에 따라 내용 바뀜) */}
       <div className="flex-1 bg-gray-50 p-4 overflow-y-auto">
-        {activeTab === 'exercise' && <div>🏋️ 운동 피드 나오는 곳</div>}
-        {activeTab === 'study' && <div>🧑‍💻 공부 피드 나오는 곳</div>}
-        {activeTab === 'reading' && <div>📖 독서 피드 나오는 곳</div>}
+        {activeTab === 'exercise' && <div>운동 피드 나오는 곳</div>}
+        {activeTab === 'study' && <div>공부 피드 나오는 곳</div>}
+        {activeTab === 'reading' && <div>독서 피드 나오는 곳</div>}
       </div>
 
     </PageLayout>
