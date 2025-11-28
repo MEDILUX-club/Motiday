@@ -3,6 +3,7 @@ import PageLayout from '../../components/layout/PageLayout';
 import Header from '../../components/common/Header';
 import TopTabBar from '../../components/common/TopTabBar';
 import type { TabType } from '../../components/common/TopTabBar';
+import BottomNavigationBar from '../../components/common/BottomNavigationBar';
 
 // 이미지 import
 import logo from '../../assets/images/img_Motiday.png';
@@ -30,12 +31,14 @@ const HomePage = () => {
       />
 
       {/* 3. 메인 컨텐츠 (탭에 따라 내용 바뀜) */}
-      <div className="flex-1 bg-gray-50 p-4 overflow-y-auto">
+      <div className="flex-1 bg-white p-4 overflow-y-auto">
         {activeTab === 'exercise' && <div>운동 피드 나오는 곳</div>}
         {activeTab === 'study' && <div>공부 피드 나오는 곳</div>}
         {activeTab === 'reading' && <div>독서 피드 나오는 곳</div>}
       </div>
 
+      {/* 하단 내비게이션 바 추가 */}
+      <BottomNavigationBar />
     </PageLayout>
   );
 };

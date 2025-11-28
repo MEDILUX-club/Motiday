@@ -20,6 +20,4 @@ export const colors = {
     700: '#FFD462',
     800: '#FFBA02', // Main color
   },
-  black: '#000',
-  white: '#FFF',
 }
