@@ -38,7 +38,7 @@ const TopTabBar = ({ currentTab, onTabChange }: TopTabBarProps) => {
 
   return (
     // 하단 라인을 위해 border-b 추가
-    <div className="flex w-full bg-white border-b border-gray-100">
+    <div className="flex w-full bg-white border-b border-[#E2E2E2]">
       {tabs.map((tab) => {
         const isActive = currentTab === tab.id;
         
@@ -62,7 +62,7 @@ const TopTabBar = ({ currentTab, onTabChange }: TopTabBarProps) => {
 
             {/* [4] 활성 상태일 때 하단 노란색 바 표시 */}
             {isActive && (
-              <div className="absolute bottom-0 h-0.5 w-full bg-primary-800" /> 
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#f5c400]" /> 
             )}
           </button>
         );
