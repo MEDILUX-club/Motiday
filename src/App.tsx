@@ -1,17 +1,22 @@
-import { useEffect, useState } from 'react'
-import SplashScreen from './pages/auth/SplashScreen'
-import LoginPage from './pages/auth/LoginPage'
+import { Routes, Route } from 'react-router-dom';
+// 페이지들 import
+import SplashPage from './pages/auth/SplashPage';
+import LoginPage from './pages/auth/LoginPage';
+import HomePage from './pages/home/HomePage';
 
 const App = () => {
-  const [showLogin, setShowLogin] = useState(false)
+  return (
+    <Routes>
+      {/* 1. 스플래시 화면  */}
+      <Route path="/" element={<SplashPage />} />
 
-  useEffect(() => {
-    const timer = window.setTimeout(() => setShowLogin(true), 1200)
-    return () => window.clearTimeout(timer)
-  }, [])
+      {/* 2. 로그인 화면 */}
+      <Route path="/login" element={<LoginPage />} />
 
-  return showLogin ? <LoginPage /> : <SplashScreen />
-}
+      {/* 3. 홈 화면  */}
+      <Route path="/home" element={<HomePage />} />
+    </Routes>
+  );
+};
 
-export default App
-//라우팅 관리
+export default App;
