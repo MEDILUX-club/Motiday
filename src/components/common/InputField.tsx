@@ -6,6 +6,7 @@ type InputFieldProps = {
   multiline?: boolean;
   className?: string;
   showSearchIcon?: boolean; // 단일행에서만 사용되는 좌측 아이콘
+  fullWidth?: boolean; // 기본은 w-full, 필요 시 폭 제어
 } & InputHTMLAttributes<HTMLInputElement> &
   TextareaHTMLAttributes<HTMLTextAreaElement>;
 
@@ -15,12 +16,14 @@ const InputField = ({
   className,
   rows = 3,
   showSearchIcon = false,
+  fullWidth = true,
   ...rest
 }: InputFieldProps) => {
   const Element = multiline ? 'textarea' : 'input';
 
   const baseClasses = [
-    'w-full rounded-xl text-sm placeholder:text-gray-400 focus:outline-none px-4 py-3',
+    'rounded-xl text-sm placeholder:text-gray-400 focus:outline-none px-4 py-3',
+    fullWidth ? 'w-full' : '',
     multiline ? 'resize-none' : '',
     variant === 'gray'
       ? 'bg-gray-200 text-gray-700 border border-gray-200'
