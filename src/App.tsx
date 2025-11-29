@@ -3,13 +3,15 @@ import { Routes, Route } from 'react-router-dom';
 import SplashPage from './pages/auth/SplashPage';
 import LoginPage from './pages/auth/LoginPage';
 import HomePage from './pages/home/HomePage';
-import ClubListPage from './pages/routine/ClubListPage';
-import ClubDetailPage from './pages/routine/ClubDetailPage';
-import ClubRegisterPage from './pages/routine/ClubRegisterPage';
-import ProfilePage from './pages/profile/Profilepage';
+import RoutineListPage from './pages/routine/RoutineListPage';
+import RoutineDetailPage from './pages/routine/RoutineDetailPage';
+import RoutineRegisterPage from './pages/routine/RoutineRegisterPage';
+import ProfilePage from './pages/profile/ProfilePage';
 import ProfileEditPage from './pages/profile/ProfileEditPage';
 import FollowPage from './pages/profile/FollowPage';
 import SettingsPage from './pages/profile/SettingPage';
+import CameraPage from './pages/routine/CameraPage';
+import RoutineAuthPage from './pages/routine/RoutineAuthPage';
 
 const App = () => {
   return (
@@ -24,13 +26,13 @@ const App = () => {
       <Route path="/home" element={<HomePage />} />
 
       {/* 4. 동아리 목록 */}
-      <Route path="/clubs/list" element={<ClubListPage />} />
+      <Route path="/routine/list" element={<RoutineListPage />} />
 
       {/* 5. 동아리 상세 */}
-      <Route path="/clubs/detail" element={<ClubDetailPage />} />
+      <Route path="/routine/detail" element={<RoutineDetailPage />} />
 
       {/* 6. 동아리 등록 */}
-      <Route path="/clubs/register" element={<ClubRegisterPage />} />
+      <Route path="/routine/register" element={<RoutineRegisterPage />} />
 
       {/* 7. 프로필 */}
       <Route path="/profile" element={<ProfilePage />} /> 
@@ -41,9 +43,14 @@ const App = () => {
       {/* 9. 팔로워/팔로잉 */}
       <Route path="/profile/follow" element={<FollowPage />} />
 
-      {/* 10. 설정 */
+      {/* 10. 설정 */}
       <Route path="/setting" element={<SettingsPage />} />
-      }
+
+      {/* 카메라 촬영 페이지 */}
+      <Route path="/routine/camera" element={<CameraPage />} />
+
+      {/* 인증 등록 페이지 (사진을 받아서 보여주는 곳) */}
+      <Route path="/routine/auth" element={<RoutineAuthPage />} />
     </Routes>
   );
 };

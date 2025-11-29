@@ -4,7 +4,6 @@ import iconStudyActive from '../../assets/images/img_Study_Active.png';
 import iconStudyInactive from '../../assets/images/img_Study_Inactive.png';
 import iconBookActive from '../../assets/images/img_Book_Active.png';
 import iconBookInactive from '../../assets/images/img_Book_Inactive.png';
-import { colors } from '../../assets/styles/colors';
 
 export type TabType = 'exercise' | 'study' | 'reading';
 
@@ -40,8 +39,7 @@ const TopTabBar = ({ currentTab, onTabChange }: TopTabBarProps) => {
   return (
     // 하단 라인을 위해 border-b 추가
     <div
-      className="flex w-full bg-white border-b"
-      style={{ borderColor: colors.gray[300] }}
+      className="flex w-full bg-white border-b border-gray-300"
     >
       {tabs.map((tab) => {
         const isActive = currentTab === tab.id;
@@ -67,8 +65,7 @@ const TopTabBar = ({ currentTab, onTabChange }: TopTabBarProps) => {
             {/* [4] 활성 상태일 때 하단 노란색 바 표시 */}
             {isActive && (
               <div
-                className="absolute bottom-0 left-0 right-0 h-1"
-                style={{ backgroundColor: colors.primary[800] }}
+                className="absolute bottom-0 left-0 right-0 h-1 bg-primary-800"
               /> 
             )}
           </button>

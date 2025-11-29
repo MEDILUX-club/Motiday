@@ -1,18 +1,38 @@
 @import "tailwindcss";
 
+/* v4에서는 @theme 블록 안에 CSS 변수처럼 색상을 정의합니다.
+  --color-{이름}-{숫자}: {색상값}; 형식을 사용합니다.
+*/
+@theme {
+  /* Gray Scale Overrides */
+  --color-gray-100: #FAFAFA;
+  --color-gray-200: #F6F6F6;
+  --color-gray-300: #F0F0F0;
+  --color-gray-400: #DEDEDE;
+  --color-gray-500: #C2C2C2;
+  --color-gray-600: #979797;
+  --color-gray-700: #818181;
+  --color-gray-800: #5F5F5F;
+
+  /* Primary Color Customization */
+  --color-primary-50: #FFFDF7;
+  --color-primary-100: #FFFBEF;
+  --color-primary-200: #FFF7DF;
+  --color-primary-300: #FFF2CB;
+  --color-primary-400: #FFEBB0;
+  --color-primary-500: #FFE495;
+  --color-primary-600: #FFDE7D;
+  --color-primary-700: #FFD462;
+  --color-primary-800: #FFBA02; /* Main color */
+}
+
+/* 기존 스타일 유지 */
 :root {
   font-family: 'Pretendard', sans-serif;
-  /* 모바일에서 터치할 때 파란색 박스 생기는 것 방지 */
   -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
   padding: 0;
-  /* 배경은 PageLayout이 알아서 하므로 여기서 흰색 지정 안 해도 됨 */
 }
-
-/* 스크롤바 숨기기 (선택 사항) 
-::-webkit-scrollbar {
-  display: none;
-}*/

@@ -2,7 +2,7 @@ import { useNavigate } from 'react-router-dom';
 // 아이콘 Import
 import iconHome from '../../assets/icons/ic_home.svg';
 import iconRoutine from '../../assets/icons/ic_routine.svg';
-import iconCamera from '../../assets/icons/ic_camera.svg';
+import iconCamera from '../../assets/icons/ic_camera_white.svg';
 import iconStore from '../../assets/icons/ic_store.svg';
 import iconaccount from '../../assets/icons/ic_account.svg';
 
@@ -77,7 +77,7 @@ const BottomNavigationBar = () => {
           <img 
             src={iconCamera} 
             alt="촬영" 
-            className="h-40 w-40 object-contain" 
+            className="h-10 w-10 object-contain" 
           />
         </button>
       </div>
