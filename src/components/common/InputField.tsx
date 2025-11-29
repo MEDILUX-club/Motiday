@@ -1,31 +1,51 @@
-import type { InputHTMLAttributes } from 'react';
-import { forwardRef } from 'react';
+import type { InputHTMLAttributes, TextareaHTMLAttributes } from 'react';
+import SearchIcon from '../../assets/icons/ic_search.svg';
 
-type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
-  label?: string;
-  helperText?: string;
+type InputFieldProps = {
+  variant?: 'white' | 'gray';
+  multiline?: boolean;
+  className?: string;
+  showSearchIcon?: boolean; // 단일행에서만 사용되는 좌측 아이콘
+} & InputHTMLAttributes<HTMLInputElement> &
+  TextareaHTMLAttributes<HTMLTextAreaElement>;
+
+const InputField = ({
+  variant = 'white',
+  multiline = false,
+  className,
+  rows = 3,
+  showSearchIcon = false,
+  ...rest
+}: InputFieldProps) => {
+  const Element = multiline ? 'textarea' : 'input';
+
+  const baseClasses = [
+    'w-full rounded-xl text-sm placeholder:text-gray-400 focus:outline-none px-4 py-3',
+    multiline ? 'resize-none' : '',
+    variant === 'gray'
+      ? 'bg-gray-200 text-gray-700 border border-gray-200'
+      : 'bg-white text-gray-900 border border-gray-200',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <div className={`relative w-full ${multiline ? '' : 'flex items-center'}`}>
+      {!multiline && showSearchIcon && (
+        <img
+          src={SearchIcon}
+          alt="search"
+          className="absolute left-3 w-4 h-4"
+        />
+      )}
+      <Element
+        className={`${baseClasses} ${!multiline && showSearchIcon ? 'pl-9' : ''}`}
+        rows={multiline ? rows : undefined}
+        {...rest}
+      />
+    </div>
+  );
 };
-
-const InputField = forwardRef<HTMLInputElement, InputFieldProps>(
-  ({ label, helperText, className, ...rest }, ref) => {
-    const inputClasses = [
-      'w-full h-14 rounded-lg bg-gray-100 px-4 text-base text-gray-900',
-      'placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300',
-      className,
-    ]
-      .filter(Boolean)
-      .join(' ');
-
-    return (
-      <label className="flex w-full flex-col gap-2 text-sm text-gray-700">
-        {label && <span className="font-medium text-gray-800">{label}</span>}
-        <input ref={ref} className={inputClasses} {...rest} />
-        {helperText && <small className="text-xs text-gray-500">{helperText}</small>}
-      </label>
-    );
-  },
-);
-
-InputField.displayName = 'InputField';
 
 export default InputField;
