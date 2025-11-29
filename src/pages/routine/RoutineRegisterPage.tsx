@@ -1,10 +1,16 @@
 import SubLayout from '../../components/layout/SubLayout';
 
-const ClubRegisterPage = () => {
+const RoutineRegisterPage = () => {
   return (
     <SubLayout
-      header={{ title: '동아리 등록' }}
-      bottomContent={<button className="w-full py-3 rounded-lg bg-blue-500 text-white">등록하기</button>}
+      header={{ title: '루틴' }}
+      footer={{
+        type: 'double-button',
+        onCancel: () => {},
+        onOk: () => {},
+        cancelText: '취소',
+        okText: '등록',
+      }}
     >
       <div className="space-y-4">
         <h1 className="text-xl font-semibold">동아리 정보를 입력하세요</h1>
@@ -14,4 +20,4 @@ const ClubRegisterPage = () => {
   );
 };
 
-export default ClubRegisterPage;
+export default RoutineRegisterPage;

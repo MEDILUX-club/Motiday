@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SubLayout from '../../components/layout/SubLayout';
-import Button from '../../components/common/Button';
 
 // 프로필 이미지 (임시)
 import dummyProfile from '../../assets/images/img_Motiday.png'; 
@@ -27,11 +26,11 @@ const RoutineAuthPage = () => {
   return (
     <SubLayout
       header={{ title: '인증' }}
-      bottomContent={
-        <Button onClick={() => alert("인증 등록 완료!")}>
-          등록
-        </Button>
-      }
+      footer={{
+        type: 'single-button',
+        text: '등록',
+        onOk: () => alert('인증 등록 완료!'),
+      }}
     >
       <div className="flex flex-col gap-6">
         

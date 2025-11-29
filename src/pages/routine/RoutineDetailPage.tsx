@@ -1,13 +1,28 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import SubLayout from '../../components/layout/SubLayout';
+import iconBack from '../../assets/icons/ic_back.svg';
 
 const ClubDetailPage = () => {
   const { clubId } = useParams<{ clubId: string }>();
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<'left' | 'right'>('left');
 
   return (
     <SubLayout
-      header={{ title: '동아리 상세' }}
-      bottomContent={<button className="w-full py-3 rounded-lg bg-blue-500 text-white">참여하기</button>}
+      header={{ 
+        title: '챌린지',
+        left: (
+          <button onClick={() => navigate(-1)} className="p-2">
+            <img src={iconBack} alt="뒤로가기" className="h-5 w-5" />
+          </button>
+        ),
+      }}
+      footer={{
+        type: 'toggle',
+        toggleActive: activeTab,
+        onToggle: setActiveTab,
+      }}
     >
       <div className="space-y-4">
         <h1 className="text-xl font-semibold">

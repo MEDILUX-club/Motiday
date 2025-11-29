@@ -1,11 +1,9 @@
 type ToggleButtonProps = {
-  leftLabel: string;   // 왼쪽 텍스트 (예: 정보)
-  rightLabel: string;  // 오른쪽 텍스트 (예: 참여자)
   active: 'left' | 'right'; // 현재 선택된 상태
   onToggle: (side: 'left' | 'right') => void; // 클릭 시 실행할 함수
 };
 
-const ToggleButton = ({ leftLabel, rightLabel, active, onToggle }: ToggleButtonProps) => {
+const ToggleButton = ({ active, onToggle }: ToggleButtonProps) => {
   return (
     // [1] 전체 배경 트랙 (Gray-200)
     <div className="relative flex h-12 w-48 items-center rounded-full bg-gray-200 p-1">
@@ -24,7 +22,7 @@ const ToggleButton = ({ leftLabel, rightLabel, active, onToggle }: ToggleButtonP
           ${active === 'left' ? 'text-gray-700' : 'text-gray-400'} 
         `}
       >
-        {leftLabel}
+        정보
       </button>
 
       {/* [3] 오른쪽 버튼 */}
@@ -34,7 +32,7 @@ const ToggleButton = ({ leftLabel, rightLabel, active, onToggle }: ToggleButtonP
           ${active === 'right' ? 'text-gray-700' : 'text-gray-400'}
         `}
       >
-        {rightLabel}
+        참여자
       </button>
     </div>
   );

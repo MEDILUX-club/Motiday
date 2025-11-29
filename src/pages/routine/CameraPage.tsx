@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import PageLayout from '../../components/layout/PageLayout';
+import Button from '../../components/common/Button';
 
 // 이미지 import
 import logoWhite from '../../assets/images/img_Motiday_white.png';
@@ -76,29 +77,27 @@ const CameraPage = () => {
     <PageLayout className="bg-black">
       {imgSrc ? (
         // [결과 확인 화면]
-        <div className="relative w-full h-full flex flex-col bg-black">
+        <div className="relative w-full h-full flex flex-col bg-gray-800">
           <img src={imgSrc} alt="captured" className="w-full h-full object-contain" />
           
-          <div className="absolute bottom-10 w-full flex justify-around px-6">
-            <button 
-              onClick={() => setImgSrc(null)} 
-              className="bg-white text-black px-8 py-3 rounded-full font-bold"
-            >
-              재촬영
-            </button>
-            
-            {/* ▼▼▼ [여기가 핵심!] 사진을 들고 이동하는 코드 ▼▼▼ */}
-            <button 
-              onClick={() => {
-                if (imgSrc) {
-                  // state에 사진 데이터(capturedImage)를 담아서 보냅니다.
-                  navigate('/routine/auth', { state: { capturedImage: imgSrc } });
-                }
-              }} 
-              className="bg-primary-800 text-white px-8 py-3 rounded-full font-bold"
-            >
-              사용하기
-            </button>
+          <div className="absolute bottom-10 w-full px-6">
+            <div className="flex w-full gap-3">
+              <Button variant="secondary" onClick={() => setImgSrc(null)}>
+                재촬영
+              </Button>
+              
+              {/* ▼▼▼ [여기가 핵심!] 사진을 들고 이동하는 코드 ▼▼▼ */}
+              <Button
+                onClick={() => {
+                  if (imgSrc) {
+                    // state에 사진 데이터(capturedImage)를 담아서 보냅니다.
+                    navigate('/routine/auth', { state: { capturedImage: imgSrc } });
+                  }
+                }}
+              >
+                사용하기
+              </Button>
+            </div>
           </div>
         </div>
       ) : (

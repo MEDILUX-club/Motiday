@@ -1,44 +1,86 @@
 import type { ReactNode } from 'react';
 import PageLayout from './PageLayout';
 import Header from '../common/Header';
+import Button from '../common/Button'; 
+import ToggleButton from '../common/ToggleButton'; 
 
 type SubLayoutProps = {
   children: ReactNode;
   
-  // [1] 헤더 설정 (제목 필수)
   header: {
     left?: ReactNode;
     title: string;
     right?: ReactNode;
   };
 
-  // [2] 하단에 고정될 요소 (버튼 OR 토글버튼) - 필수!
-  // 여기에 <Button>을 넣거나 <ToggleButton>을 넣으면 됩니다.
-  bottomContent: ReactNode;
+  footer?: {
+    // 어떤 타입을 쓸지 결정
+    type: 'double-button' | 'single-button' | 'toggle' | 'none';
+    
+    /* [버튼 관련 Props] */
+    text?: string;             
+    onOk?: () => void;         
+    onCancel?: () => void;     
+    okText?: string;           
+    cancelText?: string;       
+    
+    
+    toggleActive?: 'left' | 'right'; 
+    // 매개변수가 있는 함수 타입으로 변경
+    onToggle?: (side: 'left' | 'right') => void; 
+  };
 };
 
-const SubLayout = ({ children, header, bottomContent }: SubLayoutProps) => {
+const SubLayout = ({ children, header, footer }: SubLayoutProps) => {
+  const footerConfig = footer ?? { type: 'none' as const };
+
   return (
     <PageLayout>
-      {/* 1. 헤더 (뒤로가기 포함) */}
       <Header 
         title={header.title}
-        left={<button className="text-xl">←</button>} // 나중에 아이콘으로 교체
+        left={header.left ?? null}
         right={header.right}
       />
 
-      {/* 2. 컨텐츠 (가운데 영역) */}
       <div className="flex-1 overflow-y-auto p-4">
         {children}
       </div>
 
-      {/* 3. 하단 고정 영역 (버튼이든 토글이든 여기 들어감) */}
-      {/* mt-auto: 내용이 적어도 항상 바닥에 붙음 */}
-      {/* bg-white border-t: 하단 영역 구분선과 배경 */}
-      <div className="w-full p-4 border-t border-gray-100 bg-white mt-auto flex justify-center">
-        {bottomContent}
-      </div>
+      {footerConfig.type !== 'none' && (
+        <div className="w-full p-4 border-t border-gray-100 bg-white mt-auto flex justify-center">
+          
+          {/* CASE 1: 등록/취소 버튼 */}
+          {footerConfig.type === 'double-button' && (
+            <div className="flex w-full gap-3">
+              <Button variant="secondary" fullWidth onClick={footerConfig.onCancel}>
+                {footerConfig.cancelText || '취소'}
+              </Button>
+              <Button variant="primary" fullWidth onClick={footerConfig.onOk}>
+                {footerConfig.okText || '등록'}
+              </Button>
+            </div>
+          )}
 
+          {/* CASE 2: 버튼 한 개 */}
+          {footerConfig.type === 'single-button' && (
+            <Button variant="primary" fullWidth onClick={footerConfig.onOk}>
+              {footerConfig.text || '등록'}
+            </Button>
+          )}
+
+          {/* CASE 3: 토글 버튼 (수정됨) */}
+          {footerConfig.type === 'toggle' && (
+            <div className="flex items-center justify-center w-full">
+              {/* ToggleButton은 active와 onToggle을 받습니다. */}
+              <ToggleButton 
+                active={footerConfig.toggleActive ?? 'left'} 
+                onToggle={footerConfig.onToggle ?? (() => {})} 
+              />
+            </div>
+          )}
+
+        </div>
+      )}
     </PageLayout>
   );
 };
