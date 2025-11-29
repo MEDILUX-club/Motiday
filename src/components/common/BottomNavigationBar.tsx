@@ -45,7 +45,7 @@ const BottomNavigationBar = () => {
           <NavButton 
             label="루틴" 
             icon={iconRoutine} 
-            onClick={() => handleTabClick('/routine')} 
+            onClick={() => handleTabClick('/routine/list')} 
           />
         </div>
 
@@ -68,7 +68,7 @@ const BottomNavigationBar = () => {
 
         {/* 중앙 카메라 버튼 */}
         <button
-          onClick={() => handleTabClick('/routine/shot')}
+          onClick={() => handleTabClick('/routine/camera')}
           className="absolute left-1/2 -top-2 -translate-x-1/2 
                      flex h-[72px] w-[72px] items-center justify-center 
                      rounded-full bg-primary-800 shadow-lg 

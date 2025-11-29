@@ -1,11 +1,18 @@
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import iconBack from '../../assets/icons/ic_back.svg';
 
 const SettingPage = () => {
+  const navigate = useNavigate();
+
   return (
     <MainLayout
       header={{
-        left: <img src={iconBack} alt="back" className="h-8 w-8 object-contain" />,
+        left: (
+          <button onClick={() => navigate(-1)} className="p-2">
+            <img src={iconBack} alt="back" className="h-6 w-6 object-contain" />
+          </button>
+        ),
         title: '환경설정', 
     }}
     >

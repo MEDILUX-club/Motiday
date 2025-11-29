@@ -1,13 +1,20 @@
+import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
 
 const FollowListPage = () => {
+  const navigate = useNavigate();
+
   return (
     <MainLayout
       header={{
         left: <img src={logo} alt="logo" className="h-8 w-8 object-contain" />,
-        right: <img src={iconSetting} alt="setting" className="h-6 w-6 object-contain" />,
+        right: (
+          <button onClick={() => navigate('/setting')}>
+            <img src={iconSetting} alt="setting" className="h-6 w-6 object-contain" />
+          </button>
+        ),
       }}
     >
       <div className="p-4 space-y-4">

@@ -1,5 +1,6 @@
 // src/pages/home/HomePage.tsx
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // [수정] MainLayout 하나만 불러오면 됩니다. (PageLayout, Header, BottomNav 제거)
 import MainLayout from '../../components/layout/MainLayout';
@@ -13,13 +14,18 @@ import iconSetting from '../../assets/images/img_Setting.png';
 const HomePage = () => {
   // 현재 선택된 탭 상태 관리
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
+  const navigate = useNavigate();
 
   return (
     <MainLayout
       // 1. 헤더 설정 (필수)
       header={{
         left: <img src={logo} alt="logo" className="h-8 w-8 object-contain" />,
-        right: <img src={iconSetting} alt="setting" className="h-6 w-6 object-contain" />
+        right: (
+          <button onClick={() => navigate('/setting')}>
+            <img src={iconSetting} alt="setting" className="h-6 w-6 object-contain" />
+          </button>
+        )
       }}
       
       // 2. 상단 탭바 설정 (선택 - 여기에 넣으면 헤더 바로 아래에 붙습니다)

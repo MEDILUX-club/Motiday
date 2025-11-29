@@ -14,7 +14,7 @@ const ClubDetailPage = () => {
         title: '챌린지',
         left: (
           <button onClick={() => navigate(-1)} className="p-2">
-            <img src={iconBack} alt="뒤로가기" className="h-5 w-5" />
+            <img src={iconBack} alt="뒤로가기" className="h-6 w-6 object-contain" />
           </button>
         ),
       }}
