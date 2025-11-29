@@ -6,15 +6,20 @@ import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import TopTabBar from '../../components/common/TopTabBar';
 import type { TabType } from '../../components/common/TopTabBar';
+import HomeFeedCard from '../../components/home/HomeFeedCard';
 
 // 이미지 import
 import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
+import homeFeedProfile from '../../assets/images/img_HomeFeedCard_profile.png';
+import homeFeedImage from '../../assets/images/img_HomeFeedCard.png';
 
 const HomePage = () => {
   // 현재 선택된 탭 상태 관리
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
   const navigate = useNavigate();
+
+  const feeds = Array.from({ length: 4 }, (_, idx) => ({ id: idx }));
 
   return (
     <MainLayout
@@ -37,12 +42,18 @@ const HomePage = () => {
       }
     >
       {/* 3. 메인 컨텐츠 (children) */}
-      {/* MainLayout이 이미 스크롤(overflow-y-auto)과 배경색을 가지고 있으므로, 
-          여기서는 내부 패딩(p-4) 정도만 주면 됩니다. */}
-      <div className="p-4 h-full">
-        {activeTab === 'exercise' && <div>🏋️ 운동 피드 나오는 곳</div>}
-        {activeTab === 'study' && <div>🧑‍💻 공부 피드 나오는 곳</div>}
-        {activeTab === 'reading' && <div>📖 독서 피드 나오는 곳</div>}
+      <div className="p-4 h-full space-y-6">
+        {feeds.map((feed) => (
+          <HomeFeedCard
+            key={feed.id}
+            userName="김모티"
+            userBio="운동 루틴 챌린저"
+            userProfileImage={homeFeedProfile}
+            contentImage={homeFeedImage}
+            likeCount={12}
+            commentCount={3}
+          />
+        ))}
       </div>
 
     </MainLayout>
