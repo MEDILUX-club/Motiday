@@ -39,37 +39,46 @@ const CameraPage = () => {
 
     image.src = imageSrc;
     image.onload = () => {
+      if (!ctx) return;
+
+      // 기본 가로/세로 비율 그대로 그림
       canvas.width = image.width;
       canvas.height = image.height;
+      ctx.drawImage(image, 0, 0);
 
-      // 1. 원본 사진 그리기
-      ctx?.drawImage(image, 0, 0);
+      // 워터마크(텍스트/로고) 그리기
+      // 2. 텍스트 설정
+      const fontSize = canvas.width * 0.04;
+      ctx.font = `bold ${fontSize}px sans-serif`;
+      ctx.fillStyle = 'white';
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 4;
 
-      if (ctx) {
-        // 2. 텍스트 설정
-        const fontSize = canvas.width * 0.04;
-        ctx.font = `bold ${fontSize}px sans-serif`;
-        ctx.fillStyle = 'white';
-        ctx.shadowColor = 'rgba(0,0,0,0.5)';
-        ctx.shadowBlur = 4;
+      // 3. 날짜/시간 그리기
+      ctx.fillText(dateStr, canvas.width * 0.05, canvas.height - canvas.width * 0.05); // 좌측 하단
+      ctx.textAlign = 'right';
+      ctx.fillText(timeStr, canvas.width - canvas.width * 0.05, canvas.height - canvas.width * 0.05); // 우측 하단
 
-        // 3. 날짜/시간 그리기
-        ctx.fillText(dateStr, canvas.width * 0.05, canvas.height - canvas.width * 0.05); // 좌측 하단
-        ctx.textAlign = 'right';
-        ctx.fillText(timeStr, canvas.width - canvas.width * 0.05, canvas.height - canvas.width * 0.05); // 우측 하단
+      // 4. 로고 합성 (좌측 상단)
+      const logo = new Image();
+      logo.src = logoWhite;
+      logo.onload = () => {
+        const logoX = canvas.width * 0.05;
+        const logoY = canvas.width * 0.1;
+        const logoWidth = canvas.width * 0.05; // 크기 축소
+        const logoHeight = logoWidth * (logo.height / logo.width);
+        ctx.drawImage(logo, logoX, logoY, logoWidth, logoHeight);
 
-        // 4. 로고 합성 (좌측 상단)
-        const logo = new Image();
-        logo.src = logoWhite;
-        logo.onload = () => {
-          const logoWidth = canvas.width * 0.25;
-          const logoHeight = logoWidth * (logo.height / logo.width);
-          ctx.drawImage(logo, canvas.width * 0.05, canvas.width * 0.1, logoWidth, logoHeight);
+        // 로고 오른쪽에 텍스트 추가
+        const textPadding = logoWidth * 0.3;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.font = `bold ${logoHeight * 0.9}px sans-serif`;
+        ctx.fillText('MOTIDAY', logoX + logoWidth + textPadding, logoY + logoHeight / 2);
 
-          // 5. 최종 결과물 저장
-          setImgSrc(canvas.toDataURL('image/jpeg'));
-        };
-      }
+        // 5. 최종 결과물 저장
+        setImgSrc(canvas.toDataURL('image/jpeg'));
+      };
     };
   }, [webcamRef, dateStr, timeStr]);
 
@@ -77,7 +86,7 @@ const CameraPage = () => {
     <PageLayout className="bg-black">
       {imgSrc ? (
         // [결과 확인 화면]
-        <div className="relative w-full h-full flex flex-col bg-gray-800">
+        <div className="relative w-full h-full flex flex-col bg-gray-500">
           <img src={imgSrc} alt="captured" className="w-full h-full object-contain" />
           
           <div className="absolute bottom-10 w-full px-6">
