@@ -1,5 +1,3 @@
-//import { motion } from 'framer-motion'; // 부드러운 애니메이션을 위해 사용 (선택사항)
-
 type ToggleButtonProps = {
   leftLabel: string;   // 왼쪽 텍스트 (예: 정보)
   rightLabel: string;  // 오른쪽 텍스트 (예: 참여자)
@@ -12,7 +10,6 @@ const ToggleButton = ({ leftLabel, rightLabel, active, onToggle }: ToggleButtonP
     // [1] 전체 배경 트랙 (Gray-200)
     <div className="relative flex h-12 w-48 items-center rounded-full bg-gray-200 p-1">
       
-      {/* [2] 노란색 배경 애니메이션 (Primary-700) */}
       {/* 배경이 쓱- 이동하는 효과를 줍니다. motion을 안 쓰면 조건부 스타일로 대체 가능 */}
       <div 
         className={`absolute h-10 w-[calc(50%-4px)] rounded-full bg-primary-700 shadow-sm transition-all duration-300 ease-in-out
@@ -20,7 +17,7 @@ const ToggleButton = ({ leftLabel, rightLabel, active, onToggle }: ToggleButtonP
         `} 
       />
 
-      {/* [3] 왼쪽 버튼 */}
+      {/* [2] 왼쪽 버튼 */}
       <button
         onClick={() => onToggle('left')}
         className={`z-10 flex-1 rounded-full text-sm font-bold transition-colors duration-200
@@ -30,7 +27,7 @@ const ToggleButton = ({ leftLabel, rightLabel, active, onToggle }: ToggleButtonP
         {leftLabel}
       </button>
 
-      {/* [4] 오른쪽 버튼 */}
+      {/* [3] 오른쪽 버튼 */}
       <button
         onClick={() => onToggle('right')}
         className={`z-10 flex-1 rounded-full text-sm font-bold transition-colors duration-200

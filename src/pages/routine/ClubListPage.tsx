@@ -1,28 +1,17 @@
-// src/pages/home/HomePage.tsx
 import { useState } from 'react';
-
-// [수정] MainLayout 하나만 불러오면 됩니다. (PageLayout, Header, BottomNav 제거)
+import type { TabType } from '../../components/common/TopTabBar';
 import MainLayout from '../../components/layout/MainLayout';
 import TopTabBar from '../../components/common/TopTabBar';
-import type { TabType } from '../../components/common/TopTabBar';
 
-// 이미지 import
-import logo from '../../assets/images/img_Motiday.png';
-import iconSetting from '../../assets/images/img_Setting.png';
-
-const HomePage = () => {
-  // 현재 선택된 탭 상태 관리
+const ClubListPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
 
   return (
     <MainLayout
-      // 1. 헤더 설정 (필수)
       header={{
-        left: <img src={logo} alt="logo" className="h-8 w-8 object-contain" />,
-        right: <img src={iconSetting} alt="setting" className="h-6 w-6 object-contain" />
+        title: '루틴',
       }}
-      
-      // 2. 상단 탭바 설정 (선택 - 여기에 넣으면 헤더 바로 아래에 붙습니다)
+    
       topTabBar={
         <TopTabBar 
           currentTab={activeTab} 
@@ -43,4 +32,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default ClubListPage;
