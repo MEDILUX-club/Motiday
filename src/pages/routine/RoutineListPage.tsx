@@ -2,9 +2,13 @@ import { useState } from 'react';
 import type { TabType } from '../../components/common/TopTabBar';
 import MainLayout from '../../components/layout/MainLayout';
 import TopTabBar from '../../components/common/TopTabBar';
+import RoutineFeedCard from '../../components/routine/RoutineFeedCard';
+import routineProfile from '../../assets/images/img_HomeFeedCard_profile.png';
+import routineThumbnail from '../../assets/images/img_HomeFeedCard.png';
 
 const ClubListPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
+  const feeds = Array.from({ length: 4 }, (_, idx) => ({ id: idx }));
 
   return (
     <MainLayout
@@ -19,13 +23,23 @@ const ClubListPage = () => {
         />
       }
     >
-      {/* 3. 메인 컨텐츠 (children) */}
-      {/* MainLayout이 이미 스크롤(overflow-y-auto)과 배경색을 가지고 있으므로, 
-          여기서는 내부 패딩(p-4) 정도만 주면 됩니다. */}
-      <div className="p-4 h-full">
-        {activeTab === 'exercise' && <div>🏋️ 운동 피드 나오는 곳</div>}
-        {activeTab === 'study' && <div>🧑‍💻 공부 피드 나오는 곳</div>}
-        {activeTab === 'reading' && <div>📖 독서 피드 나오는 곳</div>}
+      <div className="p-4 h-full space-y-6">
+        {feeds.map((feed) => (
+          <RoutineFeedCard
+            key={feed.id}
+            userName="김모티"
+            userProfileImage={routineProfile}
+            createdAt="16분 전"
+            title="매주 3회 아침 운동 루틴"
+            thumbnailImage={routineThumbnail}
+            isHot={feed.id === 0}
+            difficulty="Easy"
+            frequency="주 3회 인증"
+            startDate="25.12.12 ~"
+            currentParticipants={12}
+            maxParticipants={30}
+          />
+        ))}
       </div>
 
     </MainLayout>
