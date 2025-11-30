@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import Button from '../common/Button';
 import mainDefaultImage from '../../assets/images/img_HomeFeedCard.png';
 
@@ -26,6 +27,8 @@ const RoutineTopInfo = ({
   onAction,
   actionLabel = '참여하기',
 }: RoutineTopInfoProps) => {
+  const navigate = useNavigate();
+
   return (
     <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
       {/* 상단 이미지 */}
@@ -47,23 +50,29 @@ const RoutineTopInfo = ({
 
       {/* 정보 영역 */}
       <div className="p-4 space-y-4 bg-linear-to-b from-white to-orange-50">
-        <div className="flex items-center gap-2 text-sm text-gray-700">
-          <span className="h-3 w-3 rounded-full bg-orange-300 inline-block" />
-          <span className="font-semibold">{userName}</span>
-          <span className="text-gray-400">›</span>
-        </div>
-
-        <div className="space-y-1">
-          <div className="text-lg font-bold text-gray-900">{title}</div>
+        <button
+          type="button"
+          onClick={() => navigate('/profile')}
+          className="w-full text-left space-y-2"
+        >
           <div className="flex items-center gap-2 text-sm text-gray-700">
-            <span className="px-3 py-1 rounded-full bg-orange-100 text-orange-700 font-semibold text-xs">
-              {difficulty}
-            </span>
-            <span>{frequency}</span>
+            <span className="h-6 w-6 rounded-full bg-orange-300 inline-block" />
+            <span className="font-semibold">{userName}</span>
+            <span className="text-gray-700">›</span>
           </div>
-          <div className="text-sm text-gray-700">P {reward}</div>
-          <div className="text-sm text-gray-700">현재 참여인원 {participants}</div>
-        </div>
+
+          <div className="space-y-1">
+            <div className="text-lg font-bold text-gray-900">{title}</div>
+            <div className="flex items-center gap-2 text-sm text-gray-700">
+              <span className="px-3 py-1 rounded-full bg-orange-100 text-orange-700 font-semibold text-xs">
+                {difficulty}
+              </span>
+              <span>{frequency}</span>
+            </div>
+            <div className="text-sm text-gray-700">P {reward}</div>
+            <div className="text-sm text-gray-700">현재 참여인원 {participants}</div>
+          </div>
+        </button>
 
         <Button onClick={onAction}>{actionLabel}</Button>
       </div>

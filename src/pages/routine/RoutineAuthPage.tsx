@@ -7,6 +7,8 @@ import plusBox from '../../assets/images/img_plus_box.png';
 const RoutineAuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [routineType, setRoutineType] = useState<'운동루틴' | '공부루틴' | '독서루틴'>('운동루틴');
+  const [isRoutineMenuOpen, setIsRoutineMenuOpen] = useState(false);
   
   // 1. 카메라 페이지에서 보낸 사진들
   const initialImages = useMemo(() => {
@@ -72,14 +74,39 @@ const RoutineAuthPage = () => {
         </div>
 
         {/* 유저 정보 */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 relative">
           <img src={profileImage} alt="profile" className="w-12 h-12 rounded-full bg-gray-200 object-cover" />
           <div className="flex flex-col">
             <span className="text-xs text-gray-500">2025.10.23</span>
             <span className="text-base font-bold text-gray-900">김모티</span>
           </div>
-          <div className="ml-auto text-sm text-gray-600 flex items-center gap-1 cursor-pointer">
-            운동루틴 <span className="text-xs">∨</span>
+          <div className="ml-auto relative">
+            <button
+              type="button"
+              onClick={() => setIsRoutineMenuOpen((prev) => !prev)}
+              className="flex items-center gap-1 text-sm text-gray-600 px-3 py-1.5 rounded-lg border border-gray-300 bg-white"
+            >
+              {routineType} <span className="text-xs">∨</span>
+            </button>
+            {isRoutineMenuOpen && (
+              <div className="absolute right-0 mt-2 w-32 rounded-lg border border-gray-200 bg-white shadow-md z-10">
+                {(['운동루틴', '공부루틴', '독서루틴'] as const).map((option) => (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() => {
+                      setRoutineType(option);
+                      setIsRoutineMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2 text-sm ${
+                      routineType === option ? 'bg-primary-50 text-primary-800 font-semibold' : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    {option}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

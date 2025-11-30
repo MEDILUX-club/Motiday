@@ -25,7 +25,11 @@ const HomePage = () => {
     <MainLayout
       // 1. 헤더 설정 (필수)
       header={{
-        left: <img src={logo} alt="logo" className="h-8 w-8 object-contain" />,
+        left: (
+          <button onClick={() => navigate('/home')}>
+            <img src={logo} alt="logo" className="h-8 w-8 object-contain" />
+          </button>
+        ),
         right: (
           <button onClick={() => navigate('/setting')}>
             <img src={iconSetting} alt="setting" className="h-6 w-6 object-contain" />
