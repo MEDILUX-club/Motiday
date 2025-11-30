@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SubLayout from '../../components/layout/SubLayout';
 import InputField from '../../components/common/InputField';
 import mainPlaceholder from '../../assets/images/img_plus_box.png';
 
 const RoutineRegisterPage = () => {
+  const navigate = useNavigate();
   const [category, setCategory] = useState<'exercise' | 'study' | 'reading'>('exercise');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -21,7 +23,7 @@ const RoutineRegisterPage = () => {
       header={{ title: '루틴' }}
       footer={{
         type: 'double-button',
-        onCancel: () => {},
+        onCancel: () => navigate('/routine/list'),
         onOk: () => {},
         cancelText: '취소',
         okText: '등록',

@@ -47,7 +47,11 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-sm text-gray-800">
+          <button
+            type="button"
+            onClick={() => navigate('/profile/point')}
+            className="flex items-center gap-2 text-sm text-gray-800"
+          >
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-700 text-white font-semibold text-sm">
               P
             </span>
@@ -55,7 +59,7 @@ const ProfilePage = () => {
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-white font-semibold text-sm">
               ?
             </span>
-          </div>
+          </button>
 
           <div className="grid grid-cols-3 divide-x divide-gray-200 rounded-xl bg-gray-50 text-sm font-semibold text-gray-800 overflow-hidden">
             <button

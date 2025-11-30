@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import type { TabType } from '../../components/common/TopTabBar';
 import MainLayout from '../../components/layout/MainLayout';
@@ -9,6 +10,7 @@ import routineProfile from '../../assets/images/img_HomeFeedCard_profile.png';
 import routineThumbnail from '../../assets/images/img_HomeFeedCard.png';
 
 const ClubListPage = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
   const [filter, setFilter] = useState('all');
   const feeds = Array.from({ length: 4 }, (_, idx) => ({ id: idx }));
@@ -18,7 +20,6 @@ const ClubListPage = () => {
       header={{
         title: '루틴',
       }}
-    
       topTabBar={
         <TopTabBar 
           currentTab={activeTab} 
@@ -26,7 +27,7 @@ const ClubListPage = () => {
         />
       }
     >
-      <div className="p-4 h-full space-y-6">
+      <div className="p-4 h-full space-y-6 pb-28">
         <FilterTab
           tabs={[
             { label: '전체', value: 'all' },
@@ -61,7 +62,15 @@ const ClubListPage = () => {
           />
         ))}
       </div>
-
+      <div className="fixed bottom-[110px] right-5 z-50">
+        <button
+          className="flex items-center gap-2 rounded-xl bg-gray-700 text-white px-4 py-2 shadow-lg"
+          onClick={() => navigate('/routine/register')}
+        >
+          <span className="text-primary-800 font-bold">+</span>
+          <span className="text-white">글쓰기</span>
+        </button>
+      </div>
     </MainLayout>
   );
 };

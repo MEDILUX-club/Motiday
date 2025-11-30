@@ -10,6 +10,7 @@ import ProfilePage from './pages/profile/ProfilePage';
 import ProfileEditPage from './pages/profile/ProfileEditPage';
 import FollowPage from './pages/profile/FollowPage';
 import SettingsPage from './pages/profile/SettingPage';
+import ProfilePointPage from './pages/profile/ProfilePointPage';
 import CameraPage from './pages/routine/CameraPage';
 import RoutineAuthPage from './pages/routine/RoutineAuthPage';
 import RoutineChatPage from './pages/routine/RoutineChatPage';
@@ -42,6 +43,9 @@ const App = () => {
 
       {/* 8. 프로필 수정 */}
       <Route path="/profile/edit" element={<ProfileEditPage />} />
+
+      {/* 8-1. 포인트 */}
+      <Route path="/profile/point" element={<ProfilePointPage />} />
 
       {/* 9. 팔로워/팔로잉 */}
       <Route path="/profile/follow" element={<FollowPage />} />
