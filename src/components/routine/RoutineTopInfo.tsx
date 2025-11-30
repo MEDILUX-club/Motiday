@@ -1,26 +1,7 @@
 import Button from '../common/Button';
 import mainDefaultImage from '../../assets/images/img_HomeFeedCard.png';
-import iconRoutineYellow from '../../assets/icons/ic_routine_yellow.svg';
-import iconSunYellow from '../../assets/icons/ic_sun_yellow.svg';
-import iconClockYellow from '../../assets/icons/ic_clock_yellow.svg';
-import iconCameraYellow from '../../assets/icons/ic_camera_yellow.svg';
 
-type DetailIconKey = 'routine' | 'sun' | 'clock' | 'camera';
-
-const iconMap: Record<DetailIconKey, string> = {
-  routine: iconRoutineYellow,
-  sun: iconSunYellow,
-  clock: iconClockYellow,
-  camera: iconCameraYellow,
-};
-
-type DetailItem = {
-  icon: DetailIconKey;
-  title: string;
-  description: string;
-};
-
-type RoutineDetailFeedProps = {
+type RoutineTopInfoProps = {
   mainImage?: string;
   tags?: string[];
   userName: string;
@@ -29,12 +10,11 @@ type RoutineDetailFeedProps = {
   frequency: string;
   reward: string;
   participants: string;
-  details: DetailItem[];
   onAction?: () => void;
   actionLabel?: string;
 };
 
-const RoutineDetailFeed = ({
+const RoutineTopInfo = ({
   mainImage = mainDefaultImage,
   tags = [],
   userName,
@@ -43,10 +23,9 @@ const RoutineDetailFeed = ({
   frequency,
   reward,
   participants,
-  details,
   onAction,
   actionLabel = '참여하기',
-}: RoutineDetailFeedProps) => {
+}: RoutineTopInfoProps) => {
   return (
     <div className="rounded-2xl border border-gray-200 bg-white shadow-sm overflow-hidden">
       {/* 상단 이미지 */}
@@ -88,23 +67,8 @@ const RoutineDetailFeed = ({
 
         <Button onClick={onAction}>{actionLabel}</Button>
       </div>
-
-      {/* 상세 항목 */}
-      <div className="m-4 rounded-2xl border border-orange-200 bg-orange-50/70 p-4 space-y-3">
-        {details.map((item, idx) => (
-          <div key={`${item.title}-${idx}`} className="flex items-start gap-3">
-            <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-orange-100">
-              <img src={iconMap[item.icon]} alt={item.title} className="h-5 w-5 object-contain" />
-            </div>
-            <div className="flex flex-col">
-              <div className="text-sm font-bold text-gray-900">{item.title}</div>
-              <div className="text-sm text-gray-700 leading-snug">{item.description}</div>
-            </div>
-          </div>
-        ))}
-      </div>
     </div>
   );
 };
 
-export default RoutineDetailFeed;
+export default RoutineTopInfo;

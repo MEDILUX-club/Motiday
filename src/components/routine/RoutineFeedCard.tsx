@@ -1,4 +1,5 @@
 // [1] 에셋 가져오기
+import { useNavigate } from 'react-router-dom';
 import imgHot from '../../assets/images/img_hot.png';
 import imgClock from '../../assets/images/img_clock_gray.png';
 import imgUser from '../../assets/images/img_user_gray.png';
@@ -37,6 +38,8 @@ const RoutineFeedCard = ({
   maxParticipants,
   onClickDetail,
 }: ChallengeCardProps) => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-full bg-white px-5 py-6 mb-2 rounded-xl">
       
@@ -118,7 +121,7 @@ const RoutineFeedCard = ({
       {/* 4. 하단 자세히보기 링크 */}
       <div className="flex justify-end mt-3">
         <button 
-          onClick={onClickDetail}
+          onClick={onClickDetail ?? (() => navigate('/routine/detail'))}
           className="flex items-center text-xs text-gray-500 hover:text-gray-600 transition-colors"
         >
           자세히보기

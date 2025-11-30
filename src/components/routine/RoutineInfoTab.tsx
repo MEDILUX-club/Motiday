@@ -1,4 +1,28 @@
-const AuthGuide = () => {
+import iconRoutineYellow from '../../assets/icons/ic_routine_yellow.svg';
+import iconSunYellow from '../../assets/icons/ic_sun_yellow.svg';
+import iconClockYellow from '../../assets/icons/ic_clock_yellow.svg';
+import iconCameraYellow from '../../assets/icons/ic_camera_yellow.svg';
+
+type DetailIconKey = 'routine' | 'sun' | 'clock' | 'camera';
+
+const iconMap: Record<DetailIconKey, string> = {
+  routine: iconRoutineYellow,
+  sun: iconSunYellow,
+  clock: iconClockYellow,
+  camera: iconCameraYellow,
+};
+
+type DetailItem = {
+  icon: DetailIconKey;
+  title: string;
+  description: string;
+};
+
+type RoutineInfoTabProps = {
+  details?: DetailItem[];
+};
+
+const RoutineInfoTab = ({ details = [] }: RoutineInfoTabProps) => {
   const rewardTable = [
     { period: '7일 (1주)', easy: '2', standard: '3', hard: '4' },
     { period: '14일 (2주)', easy: '4', standard: '6', hard: '8' },
@@ -7,6 +31,23 @@ const AuthGuide = () => {
 
   return (
     <div className="rounded-2xl bg-white shadow-sm border border-gray-200 p-4 space-y-6 text-gray-800 text-sm">
+      {/* 루틴 상세 (목적/효과/인증) */}
+      {details.length > 0 && (
+        <div className="rounded-2xl border border-orange-200 bg-orange-50/70 p-4 space-y-3">
+          {details.map((item, idx) => (
+            <div key={`${item.title}-${idx}`} className="flex items-start gap-3">
+              <div className="h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-sm border border-orange-100">
+                <img src={iconMap[item.icon]} alt={item.title} className="h-5 w-5 object-contain" />
+              </div>
+              <div className="flex flex-col">
+                <div className="text-sm font-bold text-gray-900">{item.title}</div>
+                <div className="text-sm text-gray-700 leading-snug">{item.description}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* 인증 예시 */}
       <div className="space-y-3">
         <div className="text-base font-bold">인증예시</div>
@@ -69,4 +110,4 @@ const AuthGuide = () => {
   );
 };
 
-export default AuthGuide;
+export default RoutineInfoTab;
