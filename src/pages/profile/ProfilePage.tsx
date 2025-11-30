@@ -33,7 +33,10 @@ const ProfilePage = () => {
                 <span className="flex items-center gap-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-1">
                   <span className="text-[10px]">✔</span> 인증 12회
                 </span>
-                <button className="ml-auto text-gray-400 hover:text-gray-600">
+                <button
+                  className="ml-auto text-gray-400 hover:text-gray-600"
+                  onClick={() => navigate('/profile/edit')}
+                >
                   <img src={iconPencil} alt="프로필 수정" className="h-4 w-4 object-contain" />
                 </button>
               </div>
