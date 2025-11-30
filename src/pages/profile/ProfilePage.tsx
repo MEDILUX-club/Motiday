@@ -55,18 +55,30 @@ const ProfilePage = () => {
           </div>
 
           <div className="grid grid-cols-3 divide-x divide-gray-200 rounded-xl bg-gray-50 text-sm font-semibold text-gray-800 overflow-hidden">
-            <div className="flex items-center justify-center gap-2 py-3">
+            <button
+              type="button"
+              className="flex items-center justify-center gap-2 py-3"
+              onClick={() => navigate('/profile')}
+            >
               <span>게시글</span>
               <span className="text-base font-bold">3</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 py-3">
+            </button>
+            <button
+              type="button"
+              className="flex items-center justify-center gap-2 py-3"
+              onClick={() => navigate('/profile/follow', { state: { tab: 'followers' } })}
+            >
               <span>팔로워</span>
               <span className="text-base font-bold">2,432</span>
-            </div>
-            <div className="flex items-center justify-center gap-2 py-3">
+            </button>
+            <button
+              type="button"
+              className="flex items-center justify-center gap-2 py-3"
+              onClick={() => navigate('/profile/follow', { state: { tab: 'following' } })}
+            >
               <span>팔로잉</span>
               <span className="text-base font-bold">42</span>
-            </div>
+            </button>
           </div>
 
           <div className="flex items-center gap-2">
