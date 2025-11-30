@@ -24,6 +24,9 @@
   --color-primary-600: #FFDE7D;
   --color-primary-700: #FFD462;
   --color-primary-800: #FFBA02; /* Main color */
+
+  /* 폰트 패밀리 */
+  --font-sans: 'Pretendard', sans-serif;
 }
 
 /* 기존 스타일 유지 */
@@ -35,4 +38,87 @@
 body {
   margin: 0;
   padding: 0;
+}
+
+/* 폰트 시스템 유틸리티 */
+@layer utilities {
+  /* Title 4.1 (20px / Bold) */
+  .text-title-xl {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Title 3.1 (18px / SemiBold) */
+  .text-title-lg {
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Title 3.1 (16px / SemiBold) */
+  .text-title-md {
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Title 1 (16px / Medium) */
+  .text-title-base {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Body 3.1 (14px / SemiBold) */
+  .text-body-lg-bold {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Body 2.1 (14px / Medium) */
+  .text-body-lg-med {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Body 1 (14px / Regular) */
+  .text-body-lg {
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Body 3.1 Small (12px / SemiBold) */
+  .text-body-sm-bold {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Body 2.1 Small (12px / Medium) */
+  .text-body-sm-med {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
+
+  /* Body 1 Small (12px / Regular) */
+  .text-body-sm {
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: normal;
+  }
 }
