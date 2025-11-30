@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import SubLayout from '../../components/layout/SubLayout';
 import InputField from '../../components/common/InputField';
+import mainPlaceholder from '../../assets/images/img_plus_box.png';
 
 const RoutineRegisterPage = () => {
   const [category, setCategory] = useState<'exercise' | 'study' | 'reading'>('exercise');
@@ -30,7 +31,7 @@ const RoutineRegisterPage = () => {
         {/* 프로필/분류 영역 */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-gray-200" />
+            <div className="h-12 w-12 rounded-full bg-gray-400" />
             <div className="text-base font-semibold text-gray-900">김모티</div>
           </div>
 
@@ -59,6 +60,15 @@ const RoutineRegisterPage = () => {
               })}
             </div>
           </div>
+        </div>
+
+        {/* 메인 사진 영역 */}
+        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
+          <div className="text-sm font-semibold text-gray-800">*메인 사진</div>
+            <div className="h-48 w-full max-w-[150px] rounded-2xl bg-gray-400 flex items-center justify-center">
+              <img src={mainPlaceholder} alt="메인 사진 추가" className="h-8 w-8 object-contain" />
+            </div>
+          
         </div>
 
         {/* 입력 필드 영역 */}
