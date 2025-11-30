@@ -13,6 +13,8 @@ import SettingsPage from './pages/profile/SettingPage';
 import CameraPage from './pages/routine/CameraPage';
 import RoutineAuthPage from './pages/routine/RoutineAuthPage';
 import RoutineChatPage from './pages/routine/RoutineChatPage';
+import StorePage from './pages/store/StorePage';
+import StoreLoadingPage from './pages/store/StoreLoadingPage';
 
 const App = () => {
   return (
@@ -47,15 +49,20 @@ const App = () => {
       {/* 10. 설정 */}
       <Route path="/setting" element={<SettingsPage />} />
 
-      {/* 카메라 촬영 페이지 */}
+      {/* 11. 카메라 촬영 페이지 */}
       <Route path="/routine/camera" element={<CameraPage />} />
 
-      {/* 인증 등록 페이지 (사진을 받아서 보여주는 곳) */}
+      {/* 12. 인증 등록 페이지 (사진을 받아서 보여주는 곳) */}
       <Route path="/routine/auth" element={<RoutineAuthPage />} />
 
-      {/* 동아리 채팅 페이지 */}
+      {/* 13. 동아리 채팅 페이지 */}
       <Route path="/routine/chat" element={<RoutineChatPage />} />
-      
+
+      {/* 14. 스토어 페이지 */}
+      <Route path="/store" element={<StorePage />} /> 
+
+      {/* 15. 스토어 로딩 페이지 */}
+      <Route path="/store/loading" element={<StoreLoadingPage />} />
     </Routes>
   );
 };
