@@ -1,17 +1,13 @@
-import { useNavigate } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import Button from '../../components/common/Button';
+import useSocialLogin from '../../hooks/useSocialLogin';
 import logo from '../../assets/images/img_Motiday.png';
 import kakaoIcon from '../../assets/images/img_kakao.png';
 import googleIcon from '../../assets/images/img_Google.png';
 import naverIcon from '../../assets/images/img_Naver.png';
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-
-  const handleSocialLogin = () => {
-    navigate('/home');
-  };
+  const { loginWithGoogle, loginWithKakao, loginWithNaver } = useSocialLogin();
 
   return (
     <PageLayout className="flex flex-col p-6">
@@ -32,7 +28,7 @@ const LoginPage = () => {
           type="button"
           variant="outline"
           className="h-14 gap-2 bg-[#FEE500]! text-gray-800"
-          onClick={handleSocialLogin}
+          onClick={loginWithKakao}
         >
           <img src={kakaoIcon} alt="카카오" className="h-5 w-5 object-contain" />
           <span className="font-normal">카카오 로그인</span>
@@ -41,7 +37,7 @@ const LoginPage = () => {
           type="button"
           variant="outline"
           className="h-14 gap-2 bg-[#FFFFFF] text-gray-800"
-          onClick={handleSocialLogin}
+          onClick={loginWithGoogle}
         >
           <img src={googleIcon} alt="구글" className="h-5 w-5 object-contain" />
           <span className="font-normal">구글 로그인</span>
@@ -50,7 +46,7 @@ const LoginPage = () => {
           type="button"
           variant="outline"
           className="h-14 gap-2 bg-[#03C75A]! text-white"
-          onClick={handleSocialLogin}
+          onClick={loginWithNaver}
         >
           <img src={naverIcon} alt="네이버" className="h-5 w-5 object-contain" />
           <span className="font-normal">네이버 로그인</span>
