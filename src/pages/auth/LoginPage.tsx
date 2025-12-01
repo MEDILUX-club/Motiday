@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import Button from '../../components/common/Button';
 import useSocialLogin from '../../hooks/useSocialLogin';
@@ -7,7 +9,28 @@ import googleIcon from '../../assets/images/img_Google.png';
 import naverIcon from '../../assets/images/img_Naver.png';
 
 const LoginPage = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { loginWithGoogle, loginWithKakao, loginWithNaver } = useSocialLogin();
+
+  useEffect(() => {
+    if (!location.hash || !location.hash.includes('access_token')) return;
+
+    const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
+    const accessToken = hashParams.get('access_token');
+    const state = hashParams.get('state');
+    const storedState = sessionStorage.getItem('naver_oauth_state');
+
+    if (state && storedState && state !== storedState) {
+      console.warn('Naver state mismatch');
+      return;
+    }
+
+    if (accessToken) {
+      console.log('Naver accessToken:', accessToken);
+      navigate('/home', { replace: true });
+    }
+  }, [location.hash, navigate]);
 
   return (
     <PageLayout className="flex flex-col p-6">
