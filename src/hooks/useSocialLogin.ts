@@ -5,6 +5,8 @@ import { auth } from '../firebase';
 
 const provider = new GoogleAuthProvider();
 const KAKAO_JS_KEY = 'b7a1d55e1cd02bc8e3e391874bcf8171';
+const NAVER_CLIENT_ID = 'VTNbiMfoBmfIubz2rh1t';
+const NAVER_REDIRECT_URI = 'http://localhost:5173/login';
 
 declare global {
   interface Window {
@@ -23,6 +25,16 @@ declare global {
 
 const useSocialLogin = () => {
   const navigate = useNavigate();
+  const buildNaverAuthUrl = useCallback((state: string) => {
+    const query = new URLSearchParams({
+      response_type: 'token',
+      client_id: NAVER_CLIENT_ID,
+      redirect_uri: NAVER_REDIRECT_URI,
+      state,
+    });
+
+    return `https://nid.naver.com/oauth2.0/authorize?${query.toString()}`;
+  }, []);
 
   const loginWithGoogle = useCallback(async () => {
     try {
@@ -59,8 +71,15 @@ const useSocialLogin = () => {
   }, [navigate]);
 
   const loginWithNaver = useCallback(() => {
-    alert('준비 중');
-  }, []);
+    const state =
+      window.crypto?.randomUUID?.() ??
+      Math.random().toString(36).slice(2, 12);
+
+    sessionStorage.setItem('naver_oauth_state', state);
+
+    const authUrl = buildNaverAuthUrl(state);
+    window.location.href = authUrl;
+  }, [buildNaverAuthUrl]);
 
   return { loginWithGoogle, loginWithKakao, loginWithNaver };
 };
