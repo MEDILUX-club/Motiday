@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 import { auth } from '../firebase';
+import type { SocialType } from '../types/auth';
 
 const provider = new GoogleAuthProvider();
 const KAKAO_JS_KEY = 'b7a1d55e1cd02bc8e3e391874bcf8171';
@@ -23,8 +23,16 @@ declare global {
   }
 }
 
-const useSocialLogin = () => {
-  const navigate = useNavigate();
+/**
+ * 소셜 로그인 성공 콜백 타입
+ */
+type OnSocialLoginSuccess = (socialType: SocialType, socialId: string) => void;
+
+/**
+ * useSocialLogin Hook
+ * 각 소셜 플랫폼에서 토큰을 획득하고 콜백으로 전달
+ */
+const useSocialLogin = (onSuccess?: OnSocialLoginSuccess) => {
   const buildNaverAuthUrl = useCallback((state: string) => {
     const query = new URLSearchParams({
       response_type: 'token',
@@ -39,14 +47,16 @@ const useSocialLogin = () => {
   const loginWithGoogle = useCallback(async () => {
     try {
       const result = await signInWithPopup(auth, provider);
-      const idToken = await result.user.getIdToken();
+      // Firebase User 객체에서 고유 ID(uid) 추출
+      const uid = result.user.uid;
 
-      console.log('Google idToken:', idToken);
-      navigate('/home');
+      console.log('Google uid:', uid);
+      onSuccess?.('GOOGLE', uid);
     } catch (error) {
       console.error('Google login failed:', error);
+      alert('구글 로그인에 실패했습니다.');
     }
-  }, [navigate]);
+  }, [onSuccess]);
 
   const loginWithKakao = useCallback(() => {
     if (!window?.Kakao) {
@@ -61,14 +71,14 @@ const useSocialLogin = () => {
     window.Kakao.Auth.login({
       success: (authObj) => {
         console.log('Kakao accessToken:', authObj.access_token);
-        navigate('/home');
+        onSuccess?.('KAKAO', authObj.access_token);
       },
       fail: (err) => {
         console.error('Kakao login failed:', err);
         alert('카카오 로그인에 실패했습니다.');
       },
     });
-  }, [navigate]);
+  }, [onSuccess]);
 
   const loginWithNaver = useCallback(() => {
     const state =
@@ -81,7 +91,41 @@ const useSocialLogin = () => {
     window.location.href = authUrl;
   }, [buildNaverAuthUrl]);
 
-  return { loginWithGoogle, loginWithKakao, loginWithNaver };
+  /**
+   * 네이버 redirect 콜백 처리 (URL hash에서 토큰 파싱)
+   */
+  const handleNaverCallback = useCallback(
+    (hash: string) => {
+      if (!hash || !hash.includes('access_token')) return false;
+
+      const hashParams = new URLSearchParams(hash.replace(/^#/, ''));
+      const accessToken = hashParams.get('access_token');
+      const state = hashParams.get('state');
+      const storedState = sessionStorage.getItem('naver_oauth_state');
+
+      if (state && storedState && state !== storedState) {
+        console.warn('Naver state mismatch');
+        return false;
+      }
+
+      if (accessToken) {
+        console.log('Naver accessToken:', accessToken);
+        sessionStorage.removeItem('naver_oauth_state');
+        onSuccess?.('NAVER', accessToken);
+        return true;
+      }
+
+      return false;
+    },
+    [onSuccess]
+  );
+
+  return {
+    loginWithGoogle,
+    loginWithKakao,
+    loginWithNaver,
+    handleNaverCallback,
+  };
 };
 
 export default useSocialLogin;

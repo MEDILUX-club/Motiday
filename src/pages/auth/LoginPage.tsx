@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import Button from '../../components/common/Button';
 import useSocialLogin from '../../hooks/useSocialLogin';
+import { usePostLogin } from '../../hooks/queries/usePostLogin';
+import type { SocialType } from '../../types/auth';
 import logo from '../../assets/images/img_Motiday.png';
 import kakaoIcon from '../../assets/images/img_kakao.png';
 import googleIcon from '../../assets/images/img_Google.png';
@@ -11,26 +13,38 @@ import naverIcon from '../../assets/images/img_Naver.png';
 const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { loginWithGoogle, loginWithKakao, loginWithNaver } = useSocialLogin();
 
+  // 백엔드 로그인 API 호출 훅
+  const { mutate: postLogin, isPending } = usePostLogin();
+
+  /**
+   * 소셜 토큰 획득 성공 시 백엔드 로그인 API 호출
+   */
+  const handleSocialLoginSuccess = useCallback(
+    (socialType: SocialType, socialId: string) => {
+      postLogin(
+        { socialType, socialId },
+        {
+          onSuccess: () => {
+            navigate('/home', { replace: true });
+          },
+          onError: (error) => {
+            alert(error.response?.data?.message || '로그인에 실패했습니다.');
+          },
+        }
+      );
+    },
+    [postLogin, navigate]
+  );
+
+  // 소셜 로그인 훅 (콜백 전달)
+  const { loginWithGoogle, loginWithKakao, loginWithNaver, handleNaverCallback } =
+    useSocialLogin(handleSocialLoginSuccess);
+
+  // 네이버 redirect 콜백 처리
   useEffect(() => {
-    if (!location.hash || !location.hash.includes('access_token')) return;
-
-    const hashParams = new URLSearchParams(location.hash.replace(/^#/, ''));
-    const accessToken = hashParams.get('access_token');
-    const state = hashParams.get('state');
-    const storedState = sessionStorage.getItem('naver_oauth_state');
-
-    if (state && storedState && state !== storedState) {
-      console.warn('Naver state mismatch');
-      return;
-    }
-
-    if (accessToken) {
-      console.log('Naver accessToken:', accessToken);
-      navigate('/home', { replace: true });
-    }
-  }, [location.hash, navigate]);
+    handleNaverCallback(location.hash);
+  }, [location.hash, handleNaverCallback]);
 
   return (
     <PageLayout className="flex flex-col p-6">
@@ -52,27 +66,36 @@ const LoginPage = () => {
           variant="outline"
           className="h-14 gap-2 bg-[#FEE500]! text-gray-800"
           onClick={loginWithKakao}
+          disabled={isPending}
         >
           <img src={kakaoIcon} alt="카카오" className="h-5 w-5 object-contain" />
-          <span className="font-normal">카카오 로그인</span>
+          <span className="font-normal">
+            {isPending ? '로그인 중...' : '카카오 로그인'}
+          </span>
         </Button>
         <Button
           type="button"
           variant="outline"
           className="h-14 gap-2 bg-[#FFFFFF] text-gray-800"
           onClick={loginWithGoogle}
+          disabled={isPending}
         >
           <img src={googleIcon} alt="구글" className="h-5 w-5 object-contain" />
-          <span className="font-normal">구글 로그인</span>
+          <span className="font-normal">
+            {isPending ? '로그인 중...' : '구글 로그인'}
+          </span>
         </Button>
         <Button
           type="button"
           variant="outline"
           className="h-14 gap-2 bg-[#03C75A]! text-white"
           onClick={loginWithNaver}
+          disabled={isPending}
         >
           <img src={naverIcon} alt="네이버" className="h-5 w-5 object-contain" />
-          <span className="font-normal">네이버 로그인</span>
+          <span className="font-normal">
+            {isPending ? '로그인 중...' : '네이버 로그인'}
+          </span>
         </Button>
       </div>
     </PageLayout>
