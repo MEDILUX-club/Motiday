@@ -13,6 +13,8 @@ import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
 import homeFeedProfile from '../../assets/images/img_HomeFeedCard_profile.png';
 import homeFeedImage from '../../assets/images/img_HomeFeedCard.png';
+import homeFeedImageStudy from '../../assets/images/img_HomeFeedCard_study.png';
+import homeFeedImageBook from '../../assets/images/img_HomeFeedCard_book.png';
 
 const HomePage = () => {
   // 현재 선택된 탭 상태 관리
@@ -20,6 +22,11 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   const feeds = Array.from({ length: 4 }, (_, idx) => ({ id: idx }));
+  const contentImageMap: Record<TabType, string> = {
+    exercise: homeFeedImage,
+    study: homeFeedImageStudy,
+    reading: homeFeedImageBook,
+  };
 
   return (
     <MainLayout
@@ -53,7 +60,7 @@ const HomePage = () => {
             userName="김모티"
             userBio="운동 루틴 챌린저"
             userProfileImage={homeFeedProfile}
-            contentImage={homeFeedImage}
+            contentImage={contentImageMap[activeTab]}
             likeCount={12}
             commentCount={3}
           />
