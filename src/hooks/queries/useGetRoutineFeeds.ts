@@ -21,6 +21,8 @@ export const useGetRoutineFeeds = (
     queryKey: ['routines', routineId, 'feeds'],
     queryFn: () => getRoutineFeeds(routineId),
     enabled: Boolean(routineId) && (options?.enabled ?? true),
+    staleTime: 0, // 항상 stale 상태로 유지
+    refetchOnMount: 'always', // 마운트 시 항상 refetch
     ...options,
   });
 

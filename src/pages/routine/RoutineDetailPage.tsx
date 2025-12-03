@@ -172,6 +172,7 @@ const RoutineDetailPage = () => {
             todayUploads={stats?.dailyCertificationCount ?? 0}
             yesterdayUploads={stats?.yesterdayCertificationCount ?? 0}
             isParticipating={isParticipating}
+            routineId={Number(routineId)}
           />
         )}
       </div>

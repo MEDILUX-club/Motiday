@@ -39,8 +39,11 @@ const App = () => {
       {/* 6. 동아리 등록 */}
       <Route path="/routine/register" element={<RoutineRegisterPage />} />
 
-      {/* 7. 프로필 */}
-      <Route path="/profile" element={<ProfilePage />} /> 
+      {/* 7. 프로필 (자기 자신) */}
+      <Route path="/profile" element={<ProfilePage />} />
+
+      {/* 7-1. 다른 사용자 프로필 */}
+      <Route path="/profile/:userId" element={<ProfilePage />} /> 
 
       {/* 8. 프로필 수정 */}
       <Route path="/profile/edit" element={<ProfileEditPage />} />

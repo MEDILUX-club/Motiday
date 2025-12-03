@@ -89,7 +89,7 @@ const HomePage = () => {
           feeds.map((feed) => (
             <HomeFeedCard
               key={feed.feedId}
-              feedId={feed.feedId}
+              userId={feed.userId}
               userName={feed.userNickname}
               userBio={feed.routineTitle}
               userProfileImage={feed.userProfileImage || defaultProfile}

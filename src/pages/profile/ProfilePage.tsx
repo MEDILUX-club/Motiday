@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
@@ -11,10 +11,15 @@ import { useGetUserFeeds } from '../../hooks/queries/useGetUserFeeds';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const { userId: paramUserId } = useParams<{ userId: string }>();
   const authUser = useAuthStore((state) => state.user);
   const localProfileImage = useAuthStore((state) => state.localProfileImage);
   const localFeedImages = useFeedStore((state) => state.localFeedImages);
-  const userId = authUser?.userId;
+  
+  // URL 파라미터가 있으면 해당 userId, 없으면 로그인된 사용자
+  const userId = paramUserId ? Number(paramUserId) : authUser?.userId;
+  const isOwnProfile = !paramUserId || Number(paramUserId) === authUser?.userId;
+  
   const { data, isLoading, isError } = useGetUsers(userId ?? 0, {
     enabled: Boolean(userId),
   });
@@ -30,8 +35,10 @@ const ProfilePage = () => {
   const displayBio = isLoading
     ? '불러오는 중...'
     : profile?.bio || '소개를 추가하세요.';
-  // 로컬 이미지 > 서버 이미지 순으로 우선순위
-  const displayProfileImage = localProfileImage || profile?.profileImageUrl;
+  // 로컬 이미지 > 서버 이미지 순으로 우선순위 (자기 프로필일 때만 로컬 이미지 사용)
+  const displayProfileImage = isOwnProfile 
+    ? (localProfileImage || profile?.profileImageUrl)
+    : profile?.profileImageUrl;
 
   return (
     <MainLayout
@@ -63,12 +70,14 @@ const ProfilePage = () => {
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2">
                 <div className="text-xl text-gray-900">{displayName}</div>
-                <button
-                  className="ml-auto text-gray-400 hover:text-gray-600"
-                  onClick={() => navigate('/profile/edit')}
-                >
-                  <img src={iconPencil} alt="프로필 수정" className="h-4 w-4 object-contain" />
-                </button>
+                {isOwnProfile && (
+                  <button
+                    className="ml-auto text-gray-400 hover:text-gray-600"
+                    onClick={() => navigate('/profile/edit')}
+                  >
+                    <img src={iconPencil} alt="프로필 수정" className="h-4 w-4 object-contain" />
+                  </button>
+                )}
               </div>
               <div className="text-sm text-gray-700">{displayBio}</div>
               {isError && (
@@ -77,21 +86,23 @@ const ProfilePage = () => {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={() => navigate('/profile/point')}
-            className="flex items-center gap-2 text-sm text-gray-800"
-          >
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-700 text-white font-semibold text-sm">
-              P
-            </span>
-            <span className="font-semibold">
-              {isLoading ? '...' : `${profile?.motiBalance ?? 0} MOTI`}
-            </span>
-            <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-white font-semibold text-sm">
-              ?
-            </span>
-          </button>
+          {isOwnProfile && (
+            <button
+              type="button"
+              onClick={() => navigate('/profile/point')}
+              className="flex items-center gap-2 text-sm text-gray-800"
+            >
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-700 text-white font-semibold text-sm">
+                P
+              </span>
+              <span className="font-semibold">
+                {isLoading ? '...' : `${profile?.motiBalance ?? 0} MOTI`}
+              </span>
+              <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-white font-semibold text-sm">
+                ?
+              </span>
+            </button>
+          )}
 
           <div className="grid grid-cols-3 divide-x divide-gray-200 rounded-xl bg-gray-50 text-sm font-semibold text-gray-800 overflow-hidden">
             <button

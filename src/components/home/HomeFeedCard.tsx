@@ -10,7 +10,7 @@ import icChat from '../../assets/icons/ic_chat.svg';
 import defaultProfile from '../../assets/images/img_HomeFeedCard_profile.png';
 
 type FeedCardProps = {
-  feedId?: number;
+  userId?: number; // 프로필 페이지 이동용
   userName: string;
   userBio: string;
   userProfileImage?: string;
@@ -23,7 +23,7 @@ type FeedCardProps = {
 };
 
 const HomeFeedCard = ({
-  feedId,
+  userId,
   userName,
   userBio,
   userProfileImage,
@@ -47,7 +47,10 @@ const HomeFeedCard = ({
       
       {/* 1. 헤더 */}
       <div className="flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-3">
+        <button 
+          className="flex items-center gap-3"
+          onClick={() => userId && navigate(`/profile/${userId}`)}
+        >
           <div className="h-10 w-10 overflow-hidden rounded-full bg-gray-200">
             <img
               src={userProfileImage || defaultProfile}
@@ -55,11 +58,11 @@ const HomeFeedCard = ({
               className="h-full w-full object-cover"
             />
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col text-left">
             <span className="text-sm font-bold text-gray-800">{userName}</span>
             <span className="text-xs text-gray-500">{userBio}</span>
           </div>
-        </div>
+        </button>
         <button>
           <img src={icdots} alt="more" className="w-6 h-6" />
         </button>
@@ -67,24 +70,18 @@ const HomeFeedCard = ({
 
       {/* 2. 메인 이미지 & 북마크 */}
       <div className="relative w-full px-4">
-        <button
-          onClick={() => feedId && navigate(`/feed/${feedId}`)}
-          className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-gray-100"
-        >
+        <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-gray-100">
           <img
             src={contentImage}
             alt="feed content"
             className="h-full w-full object-cover"
           />
-          <div 
-            className="absolute right-3 top-3"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="absolute right-3 top-3">
             <button className="p-1">
               <img src={icBookmark} alt="bookmark" className="w-6 h-6" />
             </button>
           </div>
-        </button>
+        </div>
       </div>
 
       {/* 3. 캡션 (있는 경우) */}

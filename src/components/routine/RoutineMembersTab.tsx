@@ -15,6 +15,7 @@ type RoutineMembersTabProps = {
   yesterdayUploads?: number;
   onClickPosts?: () => void;
   isParticipating?: boolean; // 참여 중인 사람만 활동 게시물 버튼 표시
+  routineId?: number; // 활동 게시물 페이지로 이동 시 전달
 };
 
 const defaultParticipants: Participant[] = [
@@ -38,6 +39,7 @@ const RoutineMembersTab = ({
   yesterdayUploads,
   onClickPosts,
   isParticipating = false,
+  routineId,
 }: RoutineMembersTabProps) => {
   const navigate = useNavigate();
 
@@ -80,7 +82,7 @@ const RoutineMembersTab = ({
       {isParticipating && (
         <button
           type="button"
-          onClick={onClickPosts ?? (() => navigate('/routine/chat'))}
+          onClick={onClickPosts ?? (() => navigate('/routine/chat', { state: { routineId } }))}
           className="w-full flex items-center justify-between px-5 py-4 text-base font-semibold text-gray-800 border border-gray-200 bg-white shadow-sm "
         >
           활동 게시물

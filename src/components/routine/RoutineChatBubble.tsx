@@ -1,5 +1,6 @@
-import { useState } from 'react';
-import iconClap from '../../assets/icons/ic_clap.svg';
+// TODO: 백엔드에서 clapCount 제공 시 활성화
+// import { useState } from 'react';
+// import iconClap from '../../assets/icons/ic_clap.svg';
 
 type RoutineChatBubbleProps = {
   userProfile: string;
@@ -7,7 +8,8 @@ type RoutineChatBubbleProps = {
   contentImage?: string;
   contentText?: string;
   timestamp: string;
-  initialClapCount: number;
+  // TODO: 백엔드에서 clapCount 제공 시 활성화
+  // initialClapCount?: number;
 };
 
 const RoutineChatBubble = ({
@@ -16,9 +18,9 @@ const RoutineChatBubble = ({
   contentImage,
   contentText,
   timestamp,
-  initialClapCount,
 }: RoutineChatBubbleProps) => {
-  const [clapCount, setClapCount] = useState(initialClapCount);
+  // TODO: 백엔드에서 clapCount 제공 시 활성화
+  // const [clapCount, setClapCount] = useState(initialClapCount ?? 0);
 
   return (
     <div className="flex items-start gap-3">
@@ -48,14 +50,15 @@ const RoutineChatBubble = ({
           <span className="text-xs text-gray-400">{timestamp}</span>
         </div>
 
-        <button
+        {/* TODO: 백엔드에서 clapCount 제공 시 활성화 */}
+        {/* <button
           type="button"
           onClick={() => setClapCount((prev) => prev + 1)}
           className="inline-flex items-center gap-1 text-sm text-amber-600"
         >
           <img src={iconClap} alt="clap" className="h-4 w-4" />
           <span>{clapCount}</span>
-        </button>
+        </button> */}
       </div>
     </div>
   );
