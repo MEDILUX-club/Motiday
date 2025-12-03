@@ -27,6 +27,11 @@ const RoutineChatPage = () => {
     const date = new Date(dateString);
     return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
   };
+  
+  // 최신 피드를 아래로 보내기 위해 생성일 기준 오름차순 정렬
+  const orderedFeeds = [...feeds].sort(
+    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  );
 
   return (
     <MainLayout
@@ -50,7 +55,7 @@ const RoutineChatPage = () => {
               <span className="text-gray-500">등록된 활동 게시물이 없습니다.</span>
             </div>
           ) : (
-            feeds.map((feed) => (
+            orderedFeeds.map((feed) => (
               <RoutineChatBubble
                 key={feed.feedId}
                 userProfile={feed.userProfileImage || defaultProfile}
