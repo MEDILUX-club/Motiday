@@ -16,6 +16,7 @@ import RoutineAuthPage from './pages/routine/RoutineAuthPage';
 import RoutineChatPage from './pages/routine/RoutineChatPage';
 import StorePage from './pages/store/StorePage';
 import StoreLoadingPage from './pages/store/StoreLoadingPage';
+import FeedDetailPage from './pages/feed/FeedDetailPage';
 
 const App = () => {
   return (
@@ -67,6 +68,9 @@ const App = () => {
 
       {/* 15. 스토어 로딩 페이지 */}
       <Route path="/store/loading" element={<StoreLoadingPage />} />
+
+      {/* 16. 피드 상세 페이지 */}
+      <Route path="/feed/:feedId" element={<FeedDetailPage />} />
     </Routes>
   );
 };

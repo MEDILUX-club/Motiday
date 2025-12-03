@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 // 아이콘 이미지들 import
 import icdots from '../../assets/icons/ic_dots.svg';
@@ -9,24 +10,32 @@ import icChat from '../../assets/icons/ic_chat.svg';
 import defaultProfile from '../../assets/images/img_HomeFeedCard_profile.png';
 
 type FeedCardProps = {
+  feedId?: number;
   userName: string;
   userBio: string;
   userProfileImage?: string;
   contentImage: string;
+  caption?: string;
   likeCount: number;
   commentCount: number;
+  isLikedByMe?: boolean;
+  createdAt?: string;
 };
 
 const HomeFeedCard = ({
+  feedId,
   userName,
   userBio,
   userProfileImage,
   contentImage,
+  caption,
   likeCount,
   commentCount,
+  isLikedByMe = false,
 }: FeedCardProps) => {
-  // 좋아요 상태 관리 (false: 안 누름, true: 누름)
-  const [isLiked, setIsLiked] = useState(false);
+  const navigate = useNavigate();
+  // 좋아요 상태 관리 (서버에서 받은 isLikedByMe로 초기화)
+  const [isLiked, setIsLiked] = useState(isLikedByMe);
 
   // 좋아요 토글 함수
   const handleToggleLike = () => {
@@ -58,19 +67,34 @@ const HomeFeedCard = ({
 
       {/* 2. 메인 이미지 & 북마크 */}
       <div className="relative w-full px-4">
-        <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-gray-100">
+        <button
+          onClick={() => feedId && navigate(`/feed/${feedId}`)}
+          className="relative aspect-4/3 w-full overflow-hidden rounded-2xl bg-gray-100"
+        >
           <img
             src={contentImage}
             alt="feed content"
             className="h-full w-full object-cover"
           />
-          <button className="absolute right-3 top-3">
-            <img src={icBookmark} alt="bookmark" className="w-6 h-6" />
-          </button>
-        </div>
+          <div 
+            className="absolute right-3 top-3"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button className="p-1">
+              <img src={icBookmark} alt="bookmark" className="w-6 h-6" />
+            </button>
+          </div>
+        </button>
       </div>
 
-      {/* 3. 하단 액션 */}
+      {/* 3. 캡션 (있는 경우) */}
+      {caption && (
+        <div className="mt-3 px-4">
+          <p className="text-sm text-gray-800 line-clamp-2">{caption}</p>
+        </div>
+      )}
+
+      {/* 4. 하단 액션 */}
       <div className="mt-3 flex items-center gap-4 px-4">
         
         {/* [수정됨] 좋아요 버튼: 클릭 시 토글 기능 추가 */}

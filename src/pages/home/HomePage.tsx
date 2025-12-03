@@ -7,11 +7,13 @@ import MainLayout from '../../components/layout/MainLayout';
 import TopTabBar from '../../components/common/TopTabBar';
 import type { TabType } from '../../components/common/TopTabBar';
 import HomeFeedCard from '../../components/home/HomeFeedCard';
+import { useGetFeeds } from '../../hooks/queries/useGetFeeds';
+import { useFeedStore } from '../../store/feedStore';
 
 // 이미지 import
 import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
-import homeFeedProfile from '../../assets/images/img_HomeFeedCard_profile.png';
+import defaultProfile from '../../assets/images/img_HomeFeedCard_profile.png';
 import homeFeedImage from '../../assets/images/img_HomeFeedCard.png';
 import homeFeedImageStudy from '../../assets/images/img_HomeFeedCard_study.png';
 import homeFeedImageBook from '../../assets/images/img_HomeFeedCard_book.png';
@@ -21,7 +23,13 @@ const HomePage = () => {
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
   const navigate = useNavigate();
 
-  const feeds = Array.from({ length: 4 }, (_, idx) => ({ id: idx }));
+  // 피드 목록 조회
+  const { data: feeds = [], isLoading } = useGetFeeds();
+  
+  // 로컬 피드 이미지 (이미지 업로드 API 연동 전까지 사용)
+  const localFeedImages = useFeedStore((state) => state.localFeedImages);
+
+  // 탭에 따른 기본 이미지 (이미지 업로드 API 연동 전 fallback용)
   const contentImageMap: Record<TabType, string> = {
     exercise: homeFeedImage,
     study: homeFeedImageStudy,
@@ -54,17 +62,31 @@ const HomePage = () => {
     >
       {/* 3. 메인 컨텐츠 (children) */}
       <div className="p-4 h-full space-y-6">
-        {feeds.map((feed) => (
-          <HomeFeedCard
-            key={feed.id}
-            userName="김모티"
-            userBio="운동 루틴 챌린저"
-            userProfileImage={homeFeedProfile}
-            contentImage={contentImageMap[activeTab]}
-            likeCount={12}
-            commentCount={3}
-          />
-        ))}
+        {isLoading ? (
+          <div className="flex items-center justify-center h-40">
+            <span className="text-gray-500">피드를 불러오는 중...</span>
+          </div>
+        ) : feeds.length === 0 ? (
+          <div className="flex items-center justify-center h-40">
+            <span className="text-gray-500">등록된 피드가 없습니다.</span>
+          </div>
+        ) : (
+          feeds.map((feed) => (
+            <HomeFeedCard
+              key={feed.feedId}
+              feedId={feed.feedId}
+              userName={feed.userNickname}
+              userBio={feed.routineTitle}
+              userProfileImage={feed.userProfileImage || defaultProfile}
+              contentImage={localFeedImages[feed.feedId] || feed.imageUrl || contentImageMap[activeTab]}
+              caption={feed.caption}
+              likeCount={feed.likeCount}
+              commentCount={feed.commentCount}
+              isLikedByMe={feed.isLikedByMe}
+              createdAt={feed.createdAt}
+            />
+          ))
+        )}
       </div>
 
     </MainLayout>

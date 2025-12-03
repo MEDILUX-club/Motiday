@@ -35,7 +35,7 @@ const RoutineDetailPage = () => {
   });
 
   // 참여 중인 루틴 목록 조회 (참여 여부 확인용)
-  const { data: userRoutines = [] } = useGetUserRoutines(userId ?? 0, {
+  const { data: userRoutines = [], refetch: refetchUserRoutines } = useGetUserRoutines(userId ?? 0, {
     enabled: Boolean(userId),
   });
 
@@ -46,7 +46,9 @@ const RoutineDetailPage = () => {
 
   // 루틴 참여하기
   const { mutate: joinRoutine, isPending: isJoining } = usePostRoutineJoin({
-    onSuccess: () => {
+    onSuccess: async () => {
+      // 참여 목록 즉시 새로고침하여 버튼 상태 변경
+      await refetchUserRoutines();
       setAlertModal({
         isOpen: true,
         title: '참여 완료',
@@ -68,8 +70,8 @@ const RoutineDetailPage = () => {
   // 버튼 클릭 핸들러
   const handleAction = () => {
     if (isParticipating) {
-      // 참여 중이면 인증 페이지로 이동
-      navigate('/routine/camera');
+      // 참여 중이면 인증 페이지로 이동 (routineId 전달)
+      navigate('/routine/camera', { state: { routineId: Number(routineId) } });
     } else {
       // 참여 중이 아니면 참여하기
       joinRoutine(Number(routineId));

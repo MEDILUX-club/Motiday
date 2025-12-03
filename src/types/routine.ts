@@ -50,3 +50,27 @@ export interface RoutineParticipant {
   joinedAt: string;
 }
 
+// 피드 생성 요청
+export interface CreateFeedRequest {
+  routineId: number;
+  imageUrl: string;
+  caption: string;
+  isSharedToRoutine: boolean;
+}
+
+// 피드 응답
+export interface Feed {
+  feedId: number;
+  userId: number;
+  userNickname: string;
+  userProfileImage: string;
+  routineId: number;
+  routineTitle: string;
+  imageUrl: string;
+  caption: string;
+  likeCount: number;
+  commentCount: number;
+  isLikedByMe: boolean;
+  createdAt: string;
+}
+

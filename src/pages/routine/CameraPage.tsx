@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Webcam from 'react-webcam';
 import PageLayout from '../../components/layout/PageLayout';
 import Button from '../../components/common/Button';
@@ -13,7 +13,12 @@ import iconLoop from '../../assets/icons/ic_loop.svg';
 
 const CameraPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const webcamRef = useRef<Webcam>(null);
+  
+  // 이전 페이지에서 전달받은 routineId와 이전 이미지들
+  const routineId = location.state?.routineId as number | undefined;
+  const previousImages = (location.state?.previousImages as string[] | undefined) ?? [];
   
   const [imgSrc, setImgSrc] = useState<string | null>(null);
   const [facingMode, setFacingMode] = useState<'user' | 'environment'>('environment');
@@ -99,8 +104,14 @@ const CameraPage = () => {
               <Button
                 onClick={() => {
                   if (imgSrc) {
-                    // state에 사진 데이터(capturedImage)를 담아서 보냅니다.
-                    navigate('/routine/auth', { state: { capturedImage: imgSrc } });
+                    // state에 사진 데이터(capturedImage)와 routineId를 담아서 보냅니다.
+                    navigate('/routine/auth', { 
+                      state: { 
+                        capturedImage: imgSrc,
+                        previousImages,
+                        routineId, // 루틴 ID 전달
+                      } 
+                    });
                   }
                 }}
               >

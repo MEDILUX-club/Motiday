@@ -3,12 +3,45 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import SubLayout from '../../components/layout/SubLayout';
 import profileImage from '../../assets/images/img_HomeFeedCard_profile.png';
 import plusBox from '../../assets/images/img_plus_box.png';
+import { usePostFeeds } from '../../hooks/queries/usePostFeeds';
+import { useAuthStore } from '../../store/authStore';
+import { useFeedStore } from '../../store/feedStore';
+import { useGetUserRoutines } from '../../hooks/queries/useGetUserRoutines';
+
+// 루틴 카테고리 타입과 매핑
+type RoutineCategoryLabel = '운동루틴' | '공부루틴' | '독서루틴';
+const categoryMap: Record<RoutineCategoryLabel, string> = {
+  '운동루틴': 'EXERCISE',
+  '공부루틴': 'STUDY',
+  '독서루틴': 'READING',
+};
 
 const RoutineAuthPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [routineType, setRoutineType] = useState<'운동루틴' | '공부루틴' | '독서루틴'>('운동루틴');
+  const user = useAuthStore((state) => state.user);
+  const localProfileImage = useAuthStore((state) => state.localProfileImage);
   const [isRoutineMenuOpen, setIsRoutineMenuOpen] = useState(false);
+  const [routineCategory, setRoutineCategory] = useState<RoutineCategoryLabel>('운동루틴');
+  
+  // 카메라 페이지에서 전달받은 routineId
+  const initialRoutineId = location.state?.routineId as number | undefined;
+  
+  // 사용자가 참여 중인 루틴 목록 조회
+  const { data: userRoutines = [] } = useGetUserRoutines(user?.userId ?? 0, {
+    enabled: Boolean(user?.userId),
+  });
+  
+  // 실제 사용할 루틴 ID (우선순위: 전달받은 값 > 선택한 카테고리의 첫 번째 루틴 > 첫 번째 참여 루틴)
+  const selectedRoutineId = useMemo(() => {
+    if (initialRoutineId) return initialRoutineId;
+    // 선택한 카테고리에 맞는 루틴 찾기
+    const categoryRoutine = userRoutines.find(r => r.category === categoryMap[routineCategory]);
+    if (categoryRoutine) return categoryRoutine.routineId;
+    // 없으면 첫 번째 참여 루틴
+    if (userRoutines.length > 0) return userRoutines[0].routineId;
+    return undefined;
+  }, [initialRoutineId, userRoutines, routineCategory]);
   
   // 1. 카메라 페이지에서 보낸 사진들
   const initialImages = useMemo(() => {
@@ -21,21 +54,72 @@ const RoutineAuthPage = () => {
 
   const [content, setContent] = useState('');
   const [isShareEnabled, setIsShareEnabled] = useState(false);
+  
+  // 로컬 피드 이미지 저장 함수
+  const setLocalFeedImage = useFeedStore((state) => state.setLocalFeedImage);
+
+  // 피드 생성 mutation
+  const { mutate: createFeed, isPending } = usePostFeeds({
+    onSuccess: (data) => {
+      // 로컬에 피드 이미지 저장 (이미지 업로드 API 연동 전까지 사용)
+      if (images[0] && data.feedId) {
+        setLocalFeedImage(data.feedId, images[0]);
+      }
+      alert('인증이 완료되었습니다!');
+      navigate('/home'); // 홈 피드로 이동
+    },
+    onError: (error) => {
+      const message = error.response?.data?.message || '인증 등록에 실패했습니다.';
+      alert(message);
+    },
+  });
+
+  // 피드 등록 핸들러
+  const handleSubmit = () => {
+    if (!selectedRoutineId) {
+      alert('루틴을 선택해주세요.');
+      return;
+    }
+    
+    if (images.length === 0) {
+      alert('사진을 먼저 촬영해주세요.');
+      return;
+    }
+
+    // TODO: 이미지 업로드 API 연동 필요
+    // 현재는 이미지 업로드 API가 없어서 임시 placeholder 사용
+    // 나중에 이미지 업로드 API가 생기면 아래 순서로 연동:
+    // 1. images[0] (base64)를 이미지 업로드 API로 전송
+    // 2. 응답받은 imageUrl을 createFeed에 전달
+    const tempImageUrl = 'pending_upload'; // 임시 값
+
+    createFeed({
+      routineId: selectedRoutineId,
+      imageUrl: tempImageUrl,
+      caption: content,
+      isSharedToRoutine: isShareEnabled,
+    });
+  };
 
   // 사진이 없으면 다시 카메라로 돌려보냄 (예외처리)
   useEffect(() => {
     if (images.length === 0) {
-      navigate('/routine/camera');
+      navigate('/routine/camera', { state: { routineId: selectedRoutineId } });
     }
-  }, [images.length, navigate]);
+  }, [images.length, navigate, selectedRoutineId]);
+
+  // 오늘 날짜 포맷
+  const today = new Date();
+  const formattedDate = `${today.getFullYear()}.${String(today.getMonth() + 1).padStart(2, '0')}.${String(today.getDate()).padStart(2, '0')}`;
 
   return (
     <SubLayout
       header={{ title: '인증' }}
       footer={{
         type: 'single-button',
-        text: '등록',
-        onOk: () => alert('인증 등록 완료!'),
+        text: isPending ? '등록 중...' : '등록',
+        onOk: handleSubmit,
+        disabled: isPending,
       }}
     >
       <div className="flex flex-col gap-6">
@@ -66,7 +150,7 @@ const RoutineAuthPage = () => {
           ) : (
             <button
               className="w-full h-full rounded-xl bg-gray-400 border border-gray-200 flex flex-col items-center justify-center hover:bg-gray-200 transition-colors"
-              onClick={() => navigate('/routine/camera', { state: { previousImages: images } })}
+              onClick={() => navigate('/routine/camera', { state: { previousImages: images, routineId: selectedRoutineId } })}
             >
               <img src={plusBox} alt="추가" className="h-10 w-10 object-contain" />
             </button>
@@ -75,31 +159,37 @@ const RoutineAuthPage = () => {
 
         {/* 유저 정보 */}
         <div className="flex items-center gap-3 relative">
-          <img src={profileImage} alt="profile" className="w-12 h-12 rounded-full bg-gray-200 object-cover" />
+          <img 
+            src={localProfileImage || profileImage} 
+            alt="profile" 
+            className="w-12 h-12 rounded-full bg-gray-200 object-cover" 
+          />
           <div className="flex flex-col">
-            <span className="text-xs text-gray-500">2025.10.23</span>
-            <span className="text-base font-bold text-gray-900">김모티</span>
+            <span className="text-xs text-gray-500">{formattedDate}</span>
+            <span className="text-base font-bold text-gray-900">{user?.nickname || '사용자'}</span>
           </div>
-          <div className="ml-auto relative">
+          <div className="ml-auto relative z-20">
             <button
               type="button"
               onClick={() => setIsRoutineMenuOpen((prev) => !prev)}
               className="flex items-center gap-1 text-sm text-gray-600 px-3 py-1.5 rounded-lg border border-gray-300 bg-white"
             >
-              {routineType} <span className="text-xs">∨</span>
+              {routineCategory} <span className="text-xs">∨</span>
             </button>
             {isRoutineMenuOpen && (
-              <div className="absolute right-0 mt-2 w-32 rounded-lg border border-gray-200 bg-white shadow-md z-10">
+              <div className="absolute right-0 mt-2 w-32 rounded-lg border border-gray-200 bg-white shadow-lg z-50">
                 {(['운동루틴', '공부루틴', '독서루틴'] as const).map((option) => (
                   <button
                     key={option}
                     type="button"
                     onClick={() => {
-                      setRoutineType(option);
+                      setRoutineCategory(option);
                       setIsRoutineMenuOpen(false);
                     }}
                     className={`w-full text-left px-3 py-2 text-sm ${
-                      routineType === option ? 'bg-primary-50 text-primary-800 font-semibold' : 'text-gray-700 hover:bg-gray-50'
+                      routineCategory === option 
+                        ? 'bg-primary-50 text-primary-800 font-semibold' 
+                        : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     {option}

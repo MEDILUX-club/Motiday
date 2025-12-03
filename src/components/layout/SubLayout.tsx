@@ -22,7 +22,8 @@ type SubLayoutProps = {
     onOk?: () => void;         
     onCancel?: () => void;     
     okText?: string;           
-    cancelText?: string;       
+    cancelText?: string;
+    disabled?: boolean;       
     
     
     toggleActive?: 'left' | 'right'; 
@@ -56,10 +57,10 @@ const SubLayout = ({ children, header, footer }: SubLayoutProps) => {
           {/* CASE 1: 등록/취소 버튼 */}
           {footerConfig.type === 'double-button' && (
             <div className="flex w-full gap-3">
-              <Button variant="secondary" fullWidth onClick={footerConfig.onCancel}>
+              <Button variant="secondary" fullWidth onClick={footerConfig.onCancel} disabled={footerConfig.disabled}>
                 {footerConfig.cancelText || '취소'}
               </Button>
-              <Button variant="primary" fullWidth onClick={footerConfig.onOk}>
+              <Button variant="primary" fullWidth onClick={footerConfig.onOk} disabled={footerConfig.disabled}>
                 {footerConfig.okText || '등록'}
               </Button>
             </div>
@@ -67,7 +68,7 @@ const SubLayout = ({ children, header, footer }: SubLayoutProps) => {
 
           {/* CASE 2: 버튼 한 개 */}
           {footerConfig.type === 'single-button' && (
-            <Button variant="primary" fullWidth onClick={footerConfig.onOk}>
+            <Button variant="primary" fullWidth onClick={footerConfig.onOk} disabled={footerConfig.disabled}>
               {footerConfig.text || '등록'}
             </Button>
           )}

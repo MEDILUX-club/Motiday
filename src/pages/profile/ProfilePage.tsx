@@ -2,21 +2,27 @@ import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
-import mainImage from '../../assets/images/img_HomeFeedCard.png';
+import defaultFeedImage from '../../assets/images/img_HomeFeedCard.png';
 import iconPencil from '../../assets/icons/ic_pencil.svg';
 import { useAuthStore } from '../../store/authStore';
+import { useFeedStore } from '../../store/feedStore';
 import useGetUsers from '../../hooks/queries/useGetUsers';
+import { useGetUserFeeds } from '../../hooks/queries/useGetUserFeeds';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
   const authUser = useAuthStore((state) => state.user);
   const localProfileImage = useAuthStore((state) => state.localProfileImage);
+  const localFeedImages = useFeedStore((state) => state.localFeedImages);
   const userId = authUser?.userId;
   const { data, isLoading, isError } = useGetUsers(userId ?? 0, {
     enabled: Boolean(userId),
   });
 
-  const galleryImages = [mainImage, mainImage, mainImage, mainImage, mainImage, mainImage];
+  // 사용자별 피드 조회
+  const { data: userFeeds = [], isLoading: isFeedsLoading } = useGetUserFeeds(userId ?? 0, {
+    enabled: Boolean(userId),
+  });
   const profile = data ?? null;
   const displayName = isLoading
     ? '로딩중...'
@@ -94,7 +100,7 @@ const ProfilePage = () => {
               onClick={() => navigate('/profile')}
             >
               <span>게시글</span>
-              <span className="text-base font-bold">3</span>
+              <span className="text-base font-bold">{userFeeds.length}</span>
             </button>
             <button
               type="button"
@@ -125,11 +131,29 @@ const ProfilePage = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-3">
-          {galleryImages.map((img, idx) => (
-            <div key={`${img}-${idx}`} className="aspect-square rounded-2xl bg-white overflow-hidden shadow-sm">
-              <img src={img} alt={`gallery-${idx}`} className="h-full w-full object-cover" />
+          {isFeedsLoading ? (
+            <div className="col-span-3 flex items-center justify-center h-32">
+              <span className="text-gray-500 text-sm">피드를 불러오는 중...</span>
             </div>
-          ))}
+          ) : userFeeds.length === 0 ? (
+            <div className="col-span-3 flex items-center justify-center h-32">
+              <span className="text-gray-500 text-sm">등록된 피드가 없습니다.</span>
+            </div>
+          ) : (
+            userFeeds.map((feed) => (
+              <button
+                key={feed.feedId}
+                onClick={() => navigate(`/feed/${feed.feedId}`)}
+                className="aspect-square rounded-2xl bg-white overflow-hidden shadow-sm hover:opacity-90 transition-opacity"
+              >
+                <img 
+                  src={localFeedImages[feed.feedId] || feed.imageUrl || defaultFeedImage} 
+                  alt={`feed-${feed.feedId}`} 
+                  className="h-full w-full object-cover" 
+                />
+              </button>
+            ))
+          )}
         </div>
       </div>
     </MainLayout>

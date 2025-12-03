@@ -26,7 +26,11 @@ export const usePostRoutineJoin = (
     onSuccess: async (data, variables, context, mutation) => {
       // 참여 후 관련 캐시 무효화
       await queryClient.invalidateQueries({ queryKey: ['routines'] });
-      await queryClient.invalidateQueries({ queryKey: ['users'] });
+      // 사용자 루틴 목록 캐시 무효화 (참여 여부 UI 즉시 반영)
+      await queryClient.invalidateQueries({ 
+        queryKey: ['users'],
+        refetchType: 'all', // 모든 관련 쿼리 즉시 refetch
+      });
       options?.onSuccess?.(data, variables, context, mutation);
     },
     ...options,
