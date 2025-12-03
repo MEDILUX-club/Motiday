@@ -11,10 +11,12 @@ interface AuthState {
   refreshToken: string | null;
   user: User | null;
   isAuthenticated: boolean;
+  localProfileImage: string | null; // 서버 업로드 전 임시 로컬 이미지
 
   // 액션
   setTokens: (accessToken: string, refreshToken: string) => void;
   setUser: (user: User) => void;
+  setLocalProfileImage: (image: string | null) => void;
   login: (accessToken: string, refreshToken: string, user: User) => void;
   logout: () => void;
 }
@@ -31,6 +33,7 @@ export const useAuthStore = create<AuthState>()(
       refreshToken: null,
       user: null,
       isAuthenticated: false,
+      localProfileImage: null,
 
       // 토큰만 업데이트 (토큰 갱신 시 사용)
       setTokens: (accessToken, refreshToken) =>
@@ -44,6 +47,12 @@ export const useAuthStore = create<AuthState>()(
       setUser: (user) =>
         set({
           user,
+        }),
+
+      // 로컬 프로필 이미지 업데이트 (서버 업로드 전 임시)
+      setLocalProfileImage: (image) =>
+        set({
+          localProfileImage: image,
         }),
 
       // 로그인 (토큰 + 사용자 정보 한번에 저장)
@@ -67,12 +76,13 @@ export const useAuthStore = create<AuthState>()(
     {
       name: 'motiday-auth', // LocalStorage 키 이름
       storage: createJSONStorage(() => localStorage),
-      // 영구 저장할 필드 지정 (토큰과 사용자 정보만)
+      // 영구 저장할 필드 지정 (토큰과 사용자 정보, 로컬 프로필 이미지)
       partialize: (state) => ({
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         user: state.user,
         isAuthenticated: state.isAuthenticated,
+        localProfileImage: state.localProfileImage,
       }),
     }
   )

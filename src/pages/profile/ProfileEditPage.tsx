@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import InputField from '../../components/common/InputField';
@@ -14,16 +14,39 @@ import { useGetUsersCheckNickname } from '../../hooks/queries/useGetUsersCheckNi
 const ProfileEditPage = () => {
   const navigate = useNavigate();
   const userId = useAuthStore((state) => state.user?.userId);
+  const localProfileImage = useAuthStore((state) => state.localProfileImage);
+  const setLocalProfileImage = useAuthStore((state) => state.setLocalProfileImage);
   const [nickname, setNickname] = useState('');
   const [bio, setBio] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 이미지 파일인지 확인
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 선택할 수 있습니다.');
+      return;
+    }
+
+    // 파일을 base64로 변환하여 미리보기 및 store에 저장
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      setProfileImageUrl(result);
+      setLocalProfileImage(result); // store에 저장
+    };
+    reader.readAsDataURL(file);
+  };
 
   const { data: userData, isLoading } = useGetUsers(userId ?? 0, {
     enabled: Boolean(userId),
   });
 
   const { mutate: updateUser, isPending: isUpdating } = usePutUsers({
-    onSuccess: () => navigate(-1),
+    onSuccess: () => navigate('/profile', { replace: true }),
   });
 
   const {
@@ -35,27 +58,23 @@ const ProfileEditPage = () => {
     retry: 0,
   });
 
+  // 프로필 이미지는 로컬 이미지 > 서버 이미지 순으로 초기화
   useEffect(() => {
-    if (!userData) return;
-
-    // Defer updates to avoid synchronous setState inside effect
     const id = window.setTimeout(() => {
-      setNickname((prev) => (prev === (userData.nickname || '') ? prev : userData.nickname || ''));
-      setBio((prev) => (prev === (userData.bio || '') ? prev : userData.bio || ''));
-      setProfileImageUrl((prev) => (prev === (userData.profileImageUrl || '') ? prev : userData.profileImageUrl || ''));
+      setProfileImageUrl((prev) => prev || localProfileImage || userData?.profileImageUrl || '');
     }, 0);
-
     return () => clearTimeout(id);
-  }, [userData]);
+  }, [userData, localProfileImage]);
 
   const handleSubmit = () => {
     if (!userId) return;
+    // 이미지는 로컬에서만 관리 (서버 업로드 API 없음)
+    // profileImageUrl은 서버에 보내지 않음
     updateUser({
       userId,
       payload: {
-        nickname,
-        bio,
-        profileImageUrl,
+        nickname: nickname || userData?.nickname || '',
+        bio: bio || userData?.bio || '',
       },
     });
   };
@@ -78,19 +97,28 @@ const ProfileEditPage = () => {
     >
       <div className="p-4 space-y-6 bg-gray-100">
         <div className="flex flex-col items-center gap-4">
-          <div className="relative h-36 w-36 rounded-full bg-gray-300 border border-gray-400 flex items-center justify-center overflow-hidden">
-            {profileImageUrl ? (
-              <img src={profileImageUrl} alt="사진 업로드" className="h-full w-full object-cover" />
-            ) : (
-              <img src={iconPhoto} alt="사진 업로드" className="h-15 w-15 object-contain" />
-            )}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+          />
+          <div className="relative">
             <button
               type="button"
-              className="absolute bottom-0 right-0 h-10 w-10 rounded-full bg-gray-500 shadow-md flex items-center justify-center"
-              onClick={() => setProfileImageUrl('')}
+              onClick={() => fileInputRef.current?.click()}
+              className="h-36 w-36 rounded-full bg-gray-300 border border-gray-400 flex items-center justify-center overflow-hidden"
             >
-              <img src={iconCamera} alt="카메라" className="h-5 w-5 object-contain" />
+              {profileImageUrl ? (
+                <img src={profileImageUrl} alt="프로필 사진" className="h-full w-full object-cover" />
+              ) : (
+                <img src={iconPhoto} alt="사진 업로드" className="h-15 w-15 object-contain" />
+              )}
             </button>
+            <div className="absolute bottom-0 right-0 h-10 w-10 rounded-full bg-gray-500 shadow-md flex items-center justify-center pointer-events-none">
+              <img src={iconCamera} alt="카메라" className="h-5 w-5 object-contain" />
+            </div>
           </div>
         </div>
 
@@ -100,7 +128,7 @@ const ProfileEditPage = () => {
               <InputField
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
-                placeholder="아이디 입력"
+                placeholder={userData?.nickname || '아이디 입력'}
                 className="bg-white text-lg font-semibold pr-10"
                 onBlur={handleCheckNickname}
                 disabled={isLoading || isUpdating}
@@ -133,7 +161,7 @@ const ProfileEditPage = () => {
                 rows={4}
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="한 줄 소개 입력하기"
+                placeholder={userData?.bio || '한 줄 소개 입력하기'}
                 className="bg-white pr-10"
                 disabled={isLoading || isUpdating}
               />
@@ -153,7 +181,7 @@ const ProfileEditPage = () => {
 
         <Button
           onClick={handleSubmit}
-          disabled={!nickname || isLoading || isUpdating}
+          disabled={(!nickname && !userData?.nickname) || isLoading || isUpdating}
         >
           {isUpdating ? '저장 중...' : '수정완료'}
         </Button>

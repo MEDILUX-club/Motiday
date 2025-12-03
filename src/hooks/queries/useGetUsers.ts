@@ -24,6 +24,7 @@ export const useGetUsers = (
     queryKey: ['users', userId],
     queryFn: () => getUsers(userId),
     enabled: options?.enabled ?? Boolean(userId),
+    staleTime: 0, // 항상 fresh 상태 유지
     ...options,
   });
 

@@ -3,7 +3,6 @@ import MainLayout from '../../components/layout/MainLayout';
 import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
 import mainImage from '../../assets/images/img_HomeFeedCard.png';
-import heartIcon from '../../assets/images/img_heart_red.png';
 import iconPencil from '../../assets/icons/ic_pencil.svg';
 import { useAuthStore } from '../../store/authStore';
 import useGetUsers from '../../hooks/queries/useGetUsers';
@@ -11,6 +10,7 @@ import useGetUsers from '../../hooks/queries/useGetUsers';
 const ProfilePage = () => {
   const navigate = useNavigate();
   const authUser = useAuthStore((state) => state.user);
+  const localProfileImage = useAuthStore((state) => state.localProfileImage);
   const userId = authUser?.userId;
   const { data, isLoading, isError } = useGetUsers(userId ?? 0, {
     enabled: Boolean(userId),
@@ -24,6 +24,8 @@ const ProfilePage = () => {
   const displayBio = isLoading
     ? '불러오는 중...'
     : profile?.bio || '소개를 추가하세요.';
+  // 로컬 이미지 > 서버 이미지 순으로 우선순위
+  const displayProfileImage = localProfileImage || profile?.profileImageUrl;
 
   return (
     <MainLayout
@@ -44,9 +46,9 @@ const ProfilePage = () => {
         <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-4 space-y-4">
           <div className="flex items-start gap-3">
             <div className="h-16 w-16 rounded-full bg-primary-700 overflow-hidden">
-              {profile?.profileImageUrl ? (
+              {displayProfileImage ? (
                 <img
-                  src={profile.profileImageUrl}
+                  src={displayProfileImage}
                   alt="profile"
                   className="h-full w-full object-cover"
                 />
@@ -62,10 +64,7 @@ const ProfilePage = () => {
                   <img src={iconPencil} alt="프로필 수정" className="h-4 w-4 object-contain" />
                 </button>
               </div>
-              <div className="flex items-center gap-1 text-sm text-gray-700">
-                <span>{displayBio}</span>
-                <img src={heartIcon} alt="heart" className="h-4 w-4 object-contain" />
-              </div>
+              <div className="text-sm text-gray-700">{displayBio}</div>
               {isError && (
                 <div className="text-xs text-red-500">프로필을 불러오지 못했습니다.</div>
               )}

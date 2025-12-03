@@ -30,13 +30,15 @@ export const usePutUsers = (
 
   return useMutation<PutUsersResponse, AxiosError<ErrorResponse>, PutUsersVariables>({
     mutationFn: putUsers,
-    onSuccess: (data, variables, onMutateResult, mutationContext) => {
-      // 캐시된 사용자 프로필 즉시 업데이트
+    onSuccess: async (data, variables, context, mutation) => {
+      // 캐시 직접 업데이트 (비활성 쿼리에도 적용됨)
       queryClient.setQueryData(['users', variables.userId], data);
-      options?.onSuccess?.(data, variables, onMutateResult, mutationContext);
+      // 캐시 무효화하여 다음 접근 시 stale 상태로 표시
+      await queryClient.invalidateQueries({ queryKey: ['users', variables.userId] });
+      options?.onSuccess?.(data, variables, context, mutation);
     },
-    onError: (error, variables, onMutateResult, mutationContext) => {
-      options?.onError?.(error, variables, onMutateResult, mutationContext);
+    onError: (error, variables, context, mutation) => {
+      options?.onError?.(error, variables, context, mutation);
     },
     ...options,
   });

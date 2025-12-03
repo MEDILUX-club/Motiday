@@ -8,7 +8,7 @@ export interface UserProfile {
 
 export interface UpdateUserProfileRequest {
   nickname: string;
-  profileImageUrl: string;
+  profileImageUrl?: string; // 이미지 업로드 API 구현 전까지 optional
   bio: string;
 }
 
