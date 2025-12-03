@@ -9,7 +9,7 @@ export type SocialType = 'GOOGLE' | 'KAKAO' | 'NAVER';
  */
 export interface LoginRequest {
   socialType: SocialType;
-  socialId: string; // 소셜에서 받은 access_token 또는 idToken
+  socialId: string; // 소셜에서 받은 고유 id (토큰 아님)
 }
 
 /**

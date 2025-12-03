@@ -19,6 +19,13 @@ declare global {
           fail: (err: unknown) => void;
         }) => void;
       };
+      API: {
+        request: (options: {
+          url: string;
+          success: (res: { id: number }) => void;
+          fail: (err: unknown) => void;
+        }) => void;
+      };
     };
   }
 }
@@ -69,9 +76,19 @@ const useSocialLogin = (onSuccess?: OnSocialLoginSuccess) => {
     }
 
     window.Kakao.Auth.login({
-      success: (authObj) => {
-        console.log('Kakao accessToken:', authObj.access_token);
-        onSuccess?.('KAKAO', authObj.access_token);
+      success: () => {
+        // 로그인 후 사용자 고유 id 조회
+        window.Kakao.API.request({
+          url: '/v2/user/me',
+          success: (res) => {
+            const kakaoId = String(res.id);
+            onSuccess?.('KAKAO', kakaoId);
+          },
+          fail: (err) => {
+            console.error('Kakao user info failed:', err);
+            alert('카카오 사용자 정보를 불러오지 못했습니다.');
+          },
+        });
       },
       fail: (err) => {
         console.error('Kakao login failed:', err);
@@ -109,9 +126,26 @@ const useSocialLogin = (onSuccess?: OnSocialLoginSuccess) => {
       }
 
       if (accessToken) {
-        console.log('Naver accessToken:', accessToken);
         sessionStorage.removeItem('naver_oauth_state');
-        onSuccess?.('NAVER', accessToken);
+
+        // 네이버 사용자 프로필에서 고유 id 추출
+        fetch('https://openapi.naver.com/v1/nid/me', {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            const naverId = data?.response?.id;
+            if (!naverId) {
+              throw new Error('네이버 사용자 ID가 없습니다.');
+            }
+            onSuccess?.('NAVER', String(naverId));
+          })
+          .catch((error) => {
+            console.error('Naver user info failed:', error);
+            alert('네이버 사용자 정보를 불러오지 못했습니다.');
+          });
         return true;
       }
 
