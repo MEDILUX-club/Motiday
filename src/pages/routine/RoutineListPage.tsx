@@ -15,17 +15,88 @@ const ClubListPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
   const [filter, setFilter] = useState('all');
-  const feeds = Array.from({ length: 4 }, (_, idx) => ({ id: idx }));
+  const [searchQuery, setSearchQuery] = useState('');
   const contentImageMap: Record<TabType, string> = {
     exercise: homeFeedImage,
     study: homeFeedImageStudy,
     reading: homeFeedImageBook,
   };
-  const titleMap: Record<TabType, string> = {
-    exercise: '매주 3회 운동 루틴',
-    study: '매주 3회 공부 루틴',
-    reading: '매주 3회 독서 루틴',
+  const feedsByTab: Record<
+    TabType,
+    Array<{
+      id: string;
+      title: string;
+      difficulty: 'Easy' | 'Normal' | 'Hard';
+      frequency: string;
+      startDate: string;
+      currentParticipants: number;
+      maxParticipants: number;
+    }>
+  > = {
+    exercise: [
+      {
+        id: 'ex1',
+        title: '매주 3회 운동 루틴',
+        difficulty: 'Easy',
+        frequency: '주 3회 인증',
+        startDate: '25.12.12 ~',
+        currentParticipants: 12,
+        maxParticipants: 30,
+      },
+      {
+        id: 'ex2',
+        title: '아침 러닝 5km 루틴',
+        difficulty: 'Normal',
+        frequency: '주 4회 인증',
+        startDate: '25.12.15 ~',
+        currentParticipants: 8,
+        maxParticipants: 20,
+      },
+    ],
+    study: [
+      {
+        id: 'st1',
+        title: '매주 3회 독서 루틴',
+        difficulty: 'Easy',
+        frequency: '주 3회 인증',
+        startDate: '25.12.12 ~',
+        currentParticipants: 10,
+        maxParticipants: 25,
+      },
+      {
+        id: 'st2',
+        title: '야간 공부 루틴',
+        difficulty: 'Hard',
+        frequency: '주 5회 인증',
+        startDate: '25.12.20 ~',
+        currentParticipants: 5,
+        maxParticipants: 15,
+      },
+    ],
+    reading: [
+      {
+        id: 'rd1',
+        title: '매주 3회 독서 루틴',
+        difficulty: 'Easy',
+        frequency: '주 3회 인증',
+        startDate: '25.12.12 ~',
+        currentParticipants: 9,
+        maxParticipants: 18,
+      },
+      {
+        id: 'rd2',
+        title: '소설 20분 독서 인증',
+        difficulty: 'Normal',
+        frequency: '주 4회 인증',
+        startDate: '25.12.18 ~',
+        currentParticipants: 7,
+        maxParticipants: 20,
+      },
+    ],
   };
+  const filteredFeeds = feedsByTab[activeTab].filter(({ title }) =>
+    title.toLowerCase().includes(searchQuery.trim().toLowerCase())
+  );
 
   return (
     <MainLayout
@@ -55,22 +126,24 @@ const ClubListPage = () => {
           placeholder="모집글 찾기"
           variant="white"
           showSearchIcon
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        {feeds.map((feed) => (
+        {filteredFeeds.map((feed, idx) => (
           <RoutineFeedCard
             key={feed.id}
             userName="김모티"
             userProfileImage={routineProfile}
             createdAt="16분 전"
-            title={titleMap[activeTab]}
+            title={feed.title}
             thumbnailImage={contentImageMap[activeTab]}
-            isHot={feed.id === 0}
-            difficulty="Easy"
-            frequency="주 3회 인증"
-            startDate="25.12.12 ~"
-            currentParticipants={12}
-            maxParticipants={30}
+            isHot={idx === 0}
+            difficulty={feed.difficulty}
+            frequency={feed.frequency}
+            startDate={feed.startDate}
+            currentParticipants={feed.currentParticipants}
+            maxParticipants={feed.maxParticipants}
           />
         ))}
       </div>
