@@ -13,6 +13,7 @@ const apiClient = axios.create({
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
+    'ngrok-skip-browser-warning': 'true', // ngrok 무료 버전 경고 페이지 우회
   },
 });
 

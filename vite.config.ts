@@ -8,13 +8,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://nonerroneously-unaddible-deanne.ngrok-free.dev',
+        target: 'https://nonerroneously-unaddible-deanne.ngrok-free.dev',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path,
         headers: {
           'ngrok-skip-browser-warning': 'true',
-          'Origin': 'http://nonerroneously-unaddible-deanne.ngrok-free.dev',
         },
       },
     },
