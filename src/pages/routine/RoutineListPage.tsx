@@ -7,13 +7,25 @@ import RoutineFeedCard from '../../components/routine/RoutineFeedCard';
 import FilterTab from '../../components/common/FilterTab';
 import InputField from '../../components/common/InputField';
 import routineProfile from '../../assets/images/img_HomeFeedCard_profile.png';
-import routineThumbnail from '../../assets/images/img_HomeFeedCard.png';
+import homeFeedImage from '../../assets/images/img_HomeFeedCard.png';
+import homeFeedImageStudy from '../../assets/images/img_HomeFeedCard_study.png';
+import homeFeedImageBook from '../../assets/images/img_HomeFeedCard_book.png';
 
 const ClubListPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
   const [filter, setFilter] = useState('all');
   const feeds = Array.from({ length: 4 }, (_, idx) => ({ id: idx }));
+  const contentImageMap: Record<TabType, string> = {
+    exercise: homeFeedImage,
+    study: homeFeedImageStudy,
+    reading: homeFeedImageBook,
+  };
+  const titleMap: Record<TabType, string> = {
+    exercise: '매주 3회 운동 루틴',
+    study: '매주 3회 공부 루틴',
+    reading: '매주 3회 독서 루틴',
+  };
 
   return (
     <MainLayout
@@ -51,8 +63,8 @@ const ClubListPage = () => {
             userName="김모티"
             userProfileImage={routineProfile}
             createdAt="16분 전"
-            title="매주 3회 아침 운동 루틴"
-            thumbnailImage={routineThumbnail}
+            title={titleMap[activeTab]}
+            thumbnailImage={contentImageMap[activeTab]}
             isHot={feed.id === 0}
             difficulty="Easy"
             frequency="주 3회 인증"

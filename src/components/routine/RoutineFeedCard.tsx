@@ -77,10 +77,10 @@ const RoutineFeedCard = ({
       </h3>
 
       {/* 3. 챌린지 정보 박스 (테두리 있는 영역) */}
-      <div className="flex border border-gray-200 rounded-2xl p-3 gap-4 bg-white">
-        
-        {/* 왼쪽: 썸네일 이미지 */}
-        <div className="w-28 h-20 shrink-0 overflow-hidden rounded-xl bg-gray-100">
+      <div className="flex items-center border border-gray-200 rounded-2xl p-3 bg-white gap-4">
+
+        {/* 썸네일: 제목과 동일한 좌측 패딩에 맞춰 왼쪽 정렬 */}
+        <div className="basis-2/5 min-w-[120px] max-w-[170px] h-24 overflow-hidden rounded-xl bg-gray-100">
           <img 
             src={thumbnailImage} 
             alt="challenge" 
@@ -88,7 +88,7 @@ const RoutineFeedCard = ({
           />
         </div>
 
-        {/* 오른쪽: 상세 정보 */}
+        {/* 상세 정보 */}
         <div className="flex flex-col justify-center gap-1.5 w-full">
           
           {/* 난이도 뱃지 & 인증 횟수 */}
