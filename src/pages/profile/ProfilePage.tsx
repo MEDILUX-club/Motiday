@@ -5,11 +5,25 @@ import iconSetting from '../../assets/images/img_Setting.png';
 import mainImage from '../../assets/images/img_HomeFeedCard.png';
 import heartIcon from '../../assets/images/img_heart_red.png';
 import iconPencil from '../../assets/icons/ic_pencil.svg';
+import { useAuthStore } from '../../store/authStore';
+import useGetUsers from '../../hooks/queries/useGetUsers';
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const authUser = useAuthStore((state) => state.user);
+  const userId = authUser?.userId;
+  const { data, isLoading, isError } = useGetUsers(userId ?? 0, {
+    enabled: Boolean(userId),
+  });
 
   const galleryImages = [mainImage, mainImage, mainImage, mainImage, mainImage, mainImage];
+  const profile = data ?? null;
+  const displayName = isLoading
+    ? '로딩중...'
+    : profile?.nickname ?? authUser?.nickname ?? '닉네임';
+  const displayBio = isLoading
+    ? '불러오는 중...'
+    : profile?.bio || '소개를 추가하세요.';
 
   return (
     <MainLayout
@@ -29,14 +43,18 @@ const ProfilePage = () => {
       <div className="p-4 space-y-5 bg-gray-100">
         <div className="rounded-2xl bg-white shadow-sm border border-gray-100 p-4 space-y-4">
           <div className="flex items-start gap-3">
-            <div className="h-16 w-16 rounded-full bg-primary-700 ">
+            <div className="h-16 w-16 rounded-full bg-primary-700 overflow-hidden">
+              {profile?.profileImageUrl ? (
+                <img
+                  src={profile.profileImageUrl}
+                  alt="profile"
+                  className="h-full w-full object-cover"
+                />
+              ) : null}
             </div>
             <div className="flex-1 space-y-1">
               <div className="flex items-center gap-2">
-                <div className="text-xl text-gray-900">Moti_Day</div>
-                <span className="flex items-center gap-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold px-2 py-1">
-                  <span className="text-[10px]">✔</span> 인증 12회
-                </span>
+                <div className="text-xl text-gray-900">{displayName}</div>
                 <button
                   className="ml-auto text-gray-400 hover:text-gray-600"
                   onClick={() => navigate('/profile/edit')}
@@ -45,9 +63,12 @@ const ProfilePage = () => {
                 </button>
               </div>
               <div className="flex items-center gap-1 text-sm text-gray-700">
-                <span>가슴살 먹는 상.남.자 안김모티</span>
+                <span>{displayBio}</span>
                 <img src={heartIcon} alt="heart" className="h-4 w-4 object-contain" />
               </div>
+              {isError && (
+                <div className="text-xs text-red-500">프로필을 불러오지 못했습니다.</div>
+              )}
             </div>
           </div>
 
@@ -59,7 +80,9 @@ const ProfilePage = () => {
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary-700 text-white font-semibold text-sm">
               P
             </span>
-            <span className="font-semibold">100 MOTI</span>
+            <span className="font-semibold">
+              {isLoading ? '...' : `${profile?.motiBalance ?? 0} MOTI`}
+            </span>
             <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-gray-500 text-white font-semibold text-sm">
               ?
             </span>
