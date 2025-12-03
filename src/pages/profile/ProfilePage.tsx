@@ -108,7 +108,7 @@ const ProfilePage = () => {
             <button
               type="button"
               className="flex items-center justify-center gap-2 py-3"
-              onClick={() => navigate('/profile')}
+              onClick={() => navigate(paramUserId ? `/profile/${paramUserId}` : '/profile')}
             >
               <span>게시글</span>
               <span className="text-base font-bold">{userFeeds.length}</span>
@@ -116,18 +116,24 @@ const ProfilePage = () => {
             <button
               type="button"
               className="flex items-center justify-center gap-2 py-3"
-              onClick={() => navigate('/profile/follow', { state: { tab: 'followers' } })}
+              onClick={() => navigate(
+                paramUserId ? `/profile/${paramUserId}/follow` : '/profile/follow', 
+                { state: { tab: 'followers' } }
+              )}
             >
               <span>팔로워</span>
-              <span className="text-base font-bold">2,432</span>
+              <span className="text-base font-bold">0</span>
             </button>
             <button
               type="button"
               className="flex items-center justify-center gap-2 py-3"
-              onClick={() => navigate('/profile/follow', { state: { tab: 'following' } })}
+              onClick={() => navigate(
+                paramUserId ? `/profile/${paramUserId}/follow` : '/profile/follow', 
+                { state: { tab: 'following' } }
+              )}
             >
               <span>팔로잉</span>
-              <span className="text-base font-bold">42</span>
+              <span className="text-base font-bold">0</span>
             </button>
           </div>
 

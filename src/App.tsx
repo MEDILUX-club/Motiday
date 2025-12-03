@@ -51,8 +51,11 @@ const App = () => {
       {/* 8-1. 포인트 */}
       <Route path="/profile/point" element={<ProfilePointPage />} />
 
-      {/* 9. 팔로워/팔로잉 */}
+      {/* 9. 팔로워/팔로잉 (자기 자신) */}
       <Route path="/profile/follow" element={<FollowPage />} />
+
+      {/* 9-1. 다른 사용자 팔로워/팔로잉 */}
+      <Route path="/profile/:userId/follow" element={<FollowPage />} />
 
       {/* 10. 설정 */}
       <Route path="/setting" element={<SettingsPage />} />

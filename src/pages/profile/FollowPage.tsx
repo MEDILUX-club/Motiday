@@ -1,65 +1,61 @@
 import { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
 import InputField from '../../components/common/InputField';
 import logo from '../../assets/images/img_Motiday.png';
 import iconSetting from '../../assets/images/img_Setting.png';
-import profileImage from '../../assets/images/img_HomeFeedCard_profile.png';
-
-type FollowItem = {
-  name: string;
-  status: string;
-  avatar?: string;
-  isMutual?: boolean;
-};
-
-const sampleFollowers: FollowItem[] = [
-  { name: 'Jefferey illiams', status: 'Seen on Monday', isMutual: false },
-  { name: 'Talia Gomez', status: 'Seen on Wednesday', isMutual: false },
-  { name: 'Francis Ofori', status: 'Active 1hr ago', isMutual: false },
-  { name: 'Jordan Amil', status: 'Active now', isMutual: true },
-  { name: 'Jade Chen', status: 'Sent', isMutual: true },
-];
-
-const sampleFollowing: FollowItem[] = [
-  { name: 'Sophie Park', status: 'Active now', isMutual: true },
-  { name: 'Lee Min', status: 'Seen yesterday', isMutual: false },
-  { name: 'Chris Lim', status: 'Sent', isMutual: false },
-];
+import defaultProfile from '../../assets/images/img_HomeFeedCard_profile.png';
+import { useAuthStore } from '../../store/authStore';
+import { useGetFollowers } from '../../hooks/queries/useGetFollowers';
+import { useGetFollowings } from '../../hooks/queries/useGetFollowings';
+import { useGetUsers } from '../../hooks/queries/useGetUsers';
+import { useGetUserFeeds } from '../../hooks/queries/useGetUserFeeds';
+import FollowButton from '../../components/common/FollowButton';
 
 const FollowListPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { userId: paramUserId } = useParams<{ userId: string }>();
+  const authUser = useAuthStore((state) => state.user);
+  
+  // URL 파라미터가 있으면 해당 userId, 없으면 로그인된 사용자
+  const userId = paramUserId ? Number(paramUserId) : authUser?.userId;
+  
   const initialTab = (location.state as { tab?: 'followers' | 'following' })?.tab ?? 'followers';
   const [activeTab, setActiveTab] = useState<'posts' | 'followers' | 'following'>(initialTab);
   const [query, setQuery] = useState('');
-  const [followers, setFollowers] = useState<FollowItem[]>(sampleFollowers);
-  const [following, setFollowing] = useState<FollowItem[]>(sampleFollowing);
 
+  // API 조회
+  const { data: profile } = useGetUsers(userId ?? 0, { enabled: Boolean(userId) });
+  const { data: feeds = [] } = useGetUserFeeds(userId ?? 0, { enabled: Boolean(userId) });
+  const { data: followers = [], isLoading: isFollowersLoading } = useGetFollowers(userId ?? 0, { 
+    enabled: Boolean(userId) && activeTab === 'followers' 
+  });
+  const { data: followings = [], isLoading: isFollowingsLoading } = useGetFollowings(userId ?? 0, { 
+    enabled: Boolean(userId) && activeTab === 'following' 
+  });
+
+  // 현재 탭에 맞는 목록
   const list = useMemo(() => {
-    const data = activeTab === 'followers' ? followers : following;
+    const data = activeTab === 'followers' ? followers : followings;
     if (!query.trim()) return data;
-    return data.filter((item) => item.name.toLowerCase().includes(query.toLowerCase()));
-  }, [activeTab, query, followers, following]);
+    return data.filter((item) => 
+      item.nickname.toLowerCase().includes(query.toLowerCase())
+    );
+  }, [activeTab, query, followers, followings]);
 
-  const toggleMutual = (name: string) => {
-    if (activeTab === 'followers') {
-      setFollowers((prev) =>
-        prev.map((item) => (item.name === name ? { ...item, isMutual: !item.isMutual } : item)),
-      );
-    } else {
-      setFollowing((prev) =>
-        prev.map((item) => (item.name === name ? { ...item, isMutual: !item.isMutual } : item)),
-      );
-    }
-  };
+  const isLoading = activeTab === 'followers' ? isFollowersLoading : isFollowingsLoading;
 
   const handleTab = (tab: 'posts' | 'followers' | 'following') => {
     if (tab === 'posts') {
-      navigate('/profile');
+      navigate(paramUserId ? `/profile/${paramUserId}` : '/profile');
       return;
     }
     setActiveTab(tab);
+  };
+
+  const handleUserClick = (clickedUserId: number) => {
+    navigate(`/profile/${clickedUserId}`);
   };
 
   return (
@@ -78,7 +74,9 @@ const FollowListPage = () => {
       }}
     >
       <div className="p-4 space-y-5 bg-gray-100">
-        <div className="text-xl font-semibold text-gray-900 px-1">Moti_Day</div>
+        <div className="text-xl font-semibold text-gray-900 px-1">
+          {profile?.nickname || 'Moti_Day'}
+        </div>
 
         <div className="grid grid-cols-3 divide-x divide-gray-200 rounded-xl bg-white text-sm font-semibold text-gray-800 overflow-hidden border border-gray-100">
           <button
@@ -87,7 +85,7 @@ const FollowListPage = () => {
             className={`flex items-center justify-center gap-2 py-3 ${activeTab === 'posts' ? 'bg-gray-50' : ''}`}
           >
             <span>게시글</span>
-            <span className="text-base font-bold">3</span>
+            <span className="text-base font-bold">{feeds.length}</span>
           </button>
           <button
             type="button"
@@ -95,7 +93,7 @@ const FollowListPage = () => {
             className={`flex items-center justify-center gap-2 py-3 ${activeTab === 'followers' ? 'bg-gray-50' : ''}`}
           >
             <span>팔로워</span>
-            <span className="text-base font-bold">2,432</span>
+            <span className="text-base font-bold">{followers.length}</span>
           </button>
           <button
             type="button"
@@ -103,7 +101,7 @@ const FollowListPage = () => {
             className={`flex items-center justify-center gap-2 py-3 ${activeTab === 'following' ? 'bg-gray-50' : ''}`}
           >
             <span>팔로잉</span>
-            <span className="text-base font-bold">42</span>
+            <span className="text-base font-bold">{followings.length}</span>
           </button>
         </div>
 
@@ -118,26 +116,36 @@ const FollowListPage = () => {
           />
 
           <div className="space-y-4">
-            {list.map((item, idx) => (
-              <div key={`${item.name}-${idx}`} className="flex items-center gap-3">
-                <img
-                  src={item.avatar || profileImage}
-                  alt={item.name}
-                  className="h-12 w-12 rounded-full object-cover bg-gray-200"
-                />
-                <div className="flex-1">
-                  <div className="text-base font-semibold text-gray-900">{item.name}</div>
-                  <div className="text-sm text-gray-500">{item.status}</div>
-                </div>
-                <button
-                  type="button"
-                  className={`px-3 py-2 rounded-lg text-sm font-semibold transition-colors ${item.isMutual ? 'bg-gray-200 text-gray-700' : 'bg-primary-700 text-gray-900'}`}
-                  onClick={() => toggleMutual(item.name)}
-                >
-                  {item.isMutual ? '맞팔해제' : '맞팔로우'}
-                </button>
+            {isLoading ? (
+              <div className="flex items-center justify-center h-20">
+                <span className="text-gray-500">불러오는 중...</span>
               </div>
-            ))}
+            ) : list.length === 0 ? (
+              <div className="flex items-center justify-center h-20">
+                <span className="text-gray-500">
+                  {activeTab === 'followers' ? '팔로워가 없습니다.' : '팔로잉이 없습니다.'}
+                </span>
+              </div>
+            ) : (
+              list.map((item) => (
+                <div key={item.userId} className="flex items-center gap-3">
+                  <button 
+                    onClick={() => handleUserClick(item.userId)}
+                    className="flex items-center gap-3 flex-1"
+                  >
+                    <img
+                      src={item.profileImageUrl || defaultProfile}
+                      alt={item.nickname}
+                      className="h-12 w-12 rounded-full object-cover bg-gray-200"
+                    />
+                    <div className="flex-1 text-left">
+                      <div className="text-base font-semibold text-gray-900">{item.nickname}</div>
+                    </div>
+                  </button>
+                  <FollowButton targetUserId={item.userId} />
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>
