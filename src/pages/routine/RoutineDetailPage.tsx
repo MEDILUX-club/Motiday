@@ -171,6 +171,7 @@ const RoutineDetailPage = () => {
             recentUploads={stats?.last7DaysCertCount ?? 0}
             todayUploads={stats?.dailyCertificationCount ?? 0}
             yesterdayUploads={stats?.yesterdayCertificationCount ?? 0}
+            isParticipating={isParticipating}
           />
         )}
       </div>

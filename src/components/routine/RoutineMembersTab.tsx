@@ -14,6 +14,7 @@ type RoutineMembersTabProps = {
   todayUploads?: number;
   yesterdayUploads?: number;
   onClickPosts?: () => void;
+  isParticipating?: boolean; // 참여 중인 사람만 활동 게시물 버튼 표시
 };
 
 const defaultParticipants: Participant[] = [
@@ -36,6 +37,7 @@ const RoutineMembersTab = ({
   todayUploads,
   yesterdayUploads,
   onClickPosts,
+  isParticipating = false,
 }: RoutineMembersTabProps) => {
   const navigate = useNavigate();
 
@@ -74,23 +76,26 @@ const RoutineMembersTab = ({
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={onClickPosts ?? (() => navigate('/routine/chat'))}
-        className="w-full flex items-center justify-between px-5 py-4 text-base font-semibold text-gray-800 border border-gray-200 bg-white shadow-sm "
-      >
-        활동 게시물
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="text-gray-500"
+      {/* 참여 중인 사람만 활동 게시물 버튼 표시 */}
+      {isParticipating && (
+        <button
+          type="button"
+          onClick={onClickPosts ?? (() => navigate('/routine/chat'))}
+          className="w-full flex items-center justify-between px-5 py-4 text-base font-semibold text-gray-800 border border-gray-200 bg-white shadow-sm "
         >
-          <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-        </svg>
-      </button>
+          활동 게시물
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="text-gray-500"
+          >
+            <path d="M9 18L15 12L9 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 };
