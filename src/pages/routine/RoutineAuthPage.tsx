@@ -8,12 +8,11 @@ import { useAuthStore } from '../../store/authStore';
 import { useFeedStore } from '../../store/feedStore';
 import { useGetUserRoutines } from '../../hooks/queries/useGetUserRoutines';
 
-// 루틴 카테고리 타입과 매핑
-type RoutineCategoryLabel = '운동루틴' | '공부루틴' | '독서루틴';
-const categoryMap: Record<RoutineCategoryLabel, string> = {
-  '운동루틴': 'EXERCISE',
-  '공부루틴': 'STUDY',
-  '독서루틴': 'READING',
+// 카테고리 한글 변환
+const CATEGORY_LABEL: Record<string, string> = {
+  EXERCISE: '운동루틴',
+  STUDY: '공부루틴',
+  READING: '독서루틴',
 };
 
 const RoutineAuthPage = () => {
@@ -22,26 +21,35 @@ const RoutineAuthPage = () => {
   const user = useAuthStore((state) => state.user);
   const localProfileImage = useAuthStore((state) => state.localProfileImage);
   const [isRoutineMenuOpen, setIsRoutineMenuOpen] = useState(false);
-  const [routineCategory, setRoutineCategory] = useState<RoutineCategoryLabel>('운동루틴');
   
   // 카메라 페이지에서 전달받은 routineId
   const initialRoutineId = location.state?.routineId as number | undefined;
   
   // 사용자가 참여 중인 루틴 목록 조회
-  const { data: userRoutines = [] } = useGetUserRoutines(user?.userId ?? 0, {
+  const { data: userRoutines = [], isLoading: isRoutinesLoading } = useGetUserRoutines(user?.userId ?? 0, {
     enabled: Boolean(user?.userId),
   });
   
-  // 실제 사용할 루틴 ID (우선순위: 전달받은 값 > 선택한 카테고리의 첫 번째 루틴 > 첫 번째 참여 루틴)
+  // 사용자가 직접 선택한 루틴 ID (null이면 아직 선택 안 함)
+  const [manuallySelectedRoutineId, setManuallySelectedRoutineId] = useState<number | null>(null);
+  
+  // 최종 사용할 루틴 ID (우선순위: 수동 선택 > 전달받은 값 > 첫 번째 참여 루틴)
   const selectedRoutineId = useMemo(() => {
-    if (initialRoutineId) return initialRoutineId;
-    // 선택한 카테고리에 맞는 루틴 찾기
-    const categoryRoutine = userRoutines.find(r => r.category === categoryMap[routineCategory]);
-    if (categoryRoutine) return categoryRoutine.routineId;
-    // 없으면 첫 번째 참여 루틴
+    // 사용자가 직접 선택한 경우
+    if (manuallySelectedRoutineId !== null) return manuallySelectedRoutineId;
+    // 전달받은 routineId가 있고, 참여 중인 루틴 목록에 있는 경우
+    if (initialRoutineId && userRoutines.some(r => r.routineId === initialRoutineId)) {
+      return initialRoutineId;
+    }
+    // 첫 번째 참여 루틴
     if (userRoutines.length > 0) return userRoutines[0].routineId;
     return undefined;
-  }, [initialRoutineId, userRoutines, routineCategory]);
+  }, [manuallySelectedRoutineId, initialRoutineId, userRoutines]);
+  
+  // 현재 선택된 루틴 정보
+  const selectedRoutine = useMemo(() => {
+    return userRoutines.find(r => r.routineId === selectedRoutineId);
+  }, [userRoutines, selectedRoutineId]);
   
   // 1. 카메라 페이지에서 보낸 사진들
   const initialImages = useMemo(() => {
@@ -77,7 +85,11 @@ const RoutineAuthPage = () => {
   // 피드 등록 핸들러
   const handleSubmit = () => {
     if (!selectedRoutineId) {
-      alert('루틴을 선택해주세요.');
+      if (userRoutines.length === 0) {
+        alert('참여 중인 루틴이 없습니다. 먼저 루틴에 참여해주세요.');
+      } else {
+        alert('루틴을 선택해주세요.');
+      }
       return;
     }
     
@@ -173,26 +185,31 @@ const RoutineAuthPage = () => {
               type="button"
               onClick={() => setIsRoutineMenuOpen((prev) => !prev)}
               className="flex items-center gap-1 text-sm text-gray-600 px-3 py-1.5 rounded-lg border border-gray-300 bg-white"
+              disabled={isRoutinesLoading || userRoutines.length === 0}
             >
-              {routineCategory} <span className="text-xs">∨</span>
+              {isRoutinesLoading ? '로딩 중...' : 
+               userRoutines.length === 0 ? '참여 중인 루틴 없음' :
+               selectedRoutine ? (selectedRoutine.title || CATEGORY_LABEL[selectedRoutine.category] || '루틴') : '루틴 선택'}
+              {userRoutines.length > 0 && <span className="text-xs">∨</span>}
             </button>
-            {isRoutineMenuOpen && (
-              <div className="absolute right-0 mt-2 w-32 rounded-lg border border-gray-200 bg-white shadow-lg z-50">
-                {(['운동루틴', '공부루틴', '독서루틴'] as const).map((option) => (
+            {isRoutineMenuOpen && userRoutines.length > 0 && (
+              <div className="absolute right-0 mt-2 w-48 rounded-lg border border-gray-200 bg-white shadow-lg z-50 max-h-60 overflow-y-auto">
+                {userRoutines.map((routine) => (
                   <button
-                    key={option}
+                    key={routine.routineId}
                     type="button"
                     onClick={() => {
-                      setRoutineCategory(option);
+                      setManuallySelectedRoutineId(routine.routineId);
                       setIsRoutineMenuOpen(false);
                     }}
                     className={`w-full text-left px-3 py-2 text-sm ${
-                      routineCategory === option 
+                      selectedRoutineId === routine.routineId
                         ? 'bg-primary-50 text-primary-800 font-semibold' 
                         : 'text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    {option}
+                    <div className="font-medium truncate">{routine.title || '이름 없는 루틴'}</div>
+                    <div className="text-xs text-gray-400">{CATEGORY_LABEL[routine.category] || routine.category}</div>
                   </button>
                 ))}
               </div>

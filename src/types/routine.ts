@@ -66,6 +66,8 @@ export interface Feed {
   userProfileImage: string;
   routineId: number;
   routineTitle: string;
+  // TODO: 백엔드에서 routineCategory 제공 시 추가
+  // routineCategory?: RoutineCategory;
   imageUrl: string;
   caption: string;
   likeCount: number;

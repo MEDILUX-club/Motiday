@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import SubLayout from '../../components/layout/SubLayout';
 import RoutineTopInfo from '../../components/routine/RoutineTopInfo';
@@ -10,12 +10,31 @@ import useGetRoutineStats from '../../hooks/queries/useGetRoutineStats';
 import useGetUserRoutines from '../../hooks/queries/useGetUserRoutines';
 import usePostRoutineJoin from '../../hooks/queries/usePostRoutineJoin';
 import { useAuthStore } from '../../store/authStore';
+import type { Routine } from '../../types/routine';
+
+// 난이도 변환 (API → UI)
+const DIFFICULTY_DISPLAY: Record<string, 'Easy' | 'Standard' | 'Hard'> = {
+  EASY: 'Easy',
+  STANDARD: 'Standard',
+  HARD: 'Hard',
+};
+
+// 카테고리 한글 변환
+const CATEGORY_DISPLAY: Record<string, string> = {
+  EXERCISE: '운동 루틴',
+  STUDY: '공부 루틴',
+  READING: '독서 루틴',
+};
 
 const RoutineDetailPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { routineId } = useParams<{ routineId: string }>();
   const userId = useAuthStore((state) => state.user?.userId);
   const [activeTab, setActiveTab] = useState<'left' | 'right'>('left');
+  
+  // RoutineListPage에서 전달받은 루틴 데이터
+  const routine = location.state?.routine as Routine | undefined;
   
   // Alert 모달 상태
   const [alertModal, setAlertModal] = useState<{
@@ -85,11 +104,31 @@ const RoutineDetailPage = () => {
   };
 
 
+  // 난이도에 따른 인증 주기 (예시)
+  const getFrequencyByDifficulty = (difficulty?: string) => {
+    switch (difficulty) {
+      case 'EASY': return '주 2회 인증';
+      case 'STANDARD': return '주 3회 인증';
+      case 'HARD': return '주 5회 인증';
+      default: return '주 2회 인증';
+    }
+  };
+
+  // 난이도에 따른 리워드 (예시)
+  const getRewardByDifficulty = (difficulty?: string) => {
+    switch (difficulty) {
+      case 'EASY': return '+ 2 MOTI / 주';
+      case 'STANDARD': return '+ 3 MOTI / 주';
+      case 'HARD': return '+ 5 MOTI / 주';
+      default: return '+ 2 MOTI / 주';
+    }
+  };
+
   const details = [
-    { icon: 'sun' as const, title: '목적', description: '매일 일정한 시간에 일어나 아침 루틴 형성' },
-    { icon: 'routine' as const, title: '효과', description: '하루 컨디션과 집중력 향상' },
-    { icon: 'clock' as const, title: '인증 주기', description: '매일 1회, 목표시간 10분 이내 인증' },
-    { icon: 'camera' as const, title: '인증 방법', description: '실제 기상 순간 사진 업로드' },
+    { icon: 'sun' as const, title: '목적', description: routine?.description || '루틴을 통한 목표 달성' },
+    { icon: 'routine' as const, title: '효과', description: '꾸준한 습관 형성과 성취감' },
+    { icon: 'clock' as const, title: '인증 주기', description: getFrequencyByDifficulty(routine?.difficulty) },
+    { icon: 'camera' as const, title: '인증 방법', description: '실제 활동 사진 업로드' },
   ];
 
   const participants = Array(10).fill({ name: 'Moti_Day' });
@@ -112,13 +151,13 @@ const RoutineDetailPage = () => {
     >
       <div className="space-y-6">
         <RoutineTopInfo
-          userName="Khree_0"
-          title="[수원] 매주 수요일 러닝할사람"
-          difficulty="Easy"
-          frequency="2회 인증 / 주"
-          reward="+ 2 MOTI / 주"
-          participants="현재 참여인원 4,342명"
-          tags={['운동 루틴', '목표 루틴']}
+          userName="김모티" // TODO: 작성자 정보 API에서 받아오기
+          title={routine?.title || '루틴 상세'}
+          difficulty={routine ? DIFFICULTY_DISPLAY[routine.difficulty] || 'Easy' : 'Easy'}
+          frequency={getFrequencyByDifficulty(routine?.difficulty)}
+          reward={getRewardByDifficulty(routine?.difficulty)}
+          participants={`현재 참여인원 ${routine?.currentParticipants?.toLocaleString() || 0}명`}
+          tags={routine ? [CATEGORY_DISPLAY[routine.category] || '루틴', '목표 루틴'] : ['루틴']}
           onAction={handleAction}
           actionLabel={getActionLabel()}
         />

@@ -26,9 +26,15 @@ export const usePostFeeds = (
   return useMutation<PostFeedsResponse, AxiosError<ErrorResponse>, CreateFeedRequest>({
     mutationFn: postFeeds,
     onSuccess: async (data, variables, context, mutation) => {
-      // 피드 관련 캐시 무효화 (홈 피드, 프로필 피드 모두 새로고침)
-      await queryClient.invalidateQueries({ queryKey: ['feeds'] });
-      await queryClient.invalidateQueries({ queryKey: ['routines'] });
+      // 피드 관련 캐시 무효화 및 즉시 refetch
+      await queryClient.invalidateQueries({ 
+        queryKey: ['feeds'],
+        refetchType: 'all', // 활성화된 모든 쿼리 즉시 refetch
+      });
+      await queryClient.invalidateQueries({ 
+        queryKey: ['routines'],
+        refetchType: 'all',
+      });
       // 사용자별 피드 캐시 무효화 (프로필 페이지 반영)
       await queryClient.invalidateQueries({ 
         queryKey: ['users'],

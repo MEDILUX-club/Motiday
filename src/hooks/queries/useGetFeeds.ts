@@ -19,6 +19,8 @@ export const useGetFeeds = (
   useQuery({
     queryKey: ['feeds'],
     queryFn: getFeeds,
+    staleTime: 0, // 항상 stale 상태로 유지
+    refetchOnMount: 'always', // 마운트 시 항상 refetch
     ...options,
   });
 

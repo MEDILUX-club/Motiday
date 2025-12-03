@@ -151,6 +151,7 @@ const ClubListPage = () => {
               startDate={formatDate(routine.startDate)}
               currentParticipants={routine.currentParticipants}
               maxParticipants={routine.maxParticipants}
+              onClickDetail={() => navigate(`/routine/detail/${routine.routineId}`, { state: { routine } })}
             />
           ))
         )}

@@ -18,6 +18,13 @@ import homeFeedImage from '../../assets/images/img_HomeFeedCard.png';
 import homeFeedImageStudy from '../../assets/images/img_HomeFeedCard_study.png';
 import homeFeedImageBook from '../../assets/images/img_HomeFeedCard_book.png';
 
+// TODO: 백엔드에서 routineCategory 제공 시 필터링 활성화
+// const TAB_TO_CATEGORY: Record<TabType, string> = {
+//   exercise: 'EXERCISE',
+//   study: 'STUDY',
+//   reading: 'READING',
+// };
+
 const HomePage = () => {
   // 현재 선택된 탭 상태 관리
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
@@ -35,6 +42,14 @@ const HomePage = () => {
     study: homeFeedImageStudy,
     reading: homeFeedImageBook,
   };
+
+  // TODO: 백엔드에서 routineCategory 제공 시 아래 필터링 활성화
+  // const filteredFeeds = feeds.filter((feed) => {
+  //   if (feed.routineCategory) {
+  //     return feed.routineCategory === TAB_TO_CATEGORY[activeTab];
+  //   }
+  //   return true;
+  // });
 
   return (
     <MainLayout
