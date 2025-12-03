@@ -31,3 +31,22 @@ export interface Routine {
   createdAt: string;
 }
 
+// 루틴 통계 응답
+export interface RoutineStats {
+  activeParticipants: number;
+  last7DaysCertCount: number;
+  dailyCertificationCount: number;
+  yesterdayCertificationCount: number;
+}
+
+// 루틴 참여 응답
+export interface RoutineParticipant {
+  participantId: number;
+  userId: number;
+  routineId: number;
+  totalCertificationCount: number;
+  currentWeekNumber: number;
+  consecutiveSuccessWeeks: number;
+  joinedAt: string;
+}
+

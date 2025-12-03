@@ -5,6 +5,9 @@ import imgClock from '../../assets/images/img_clock_gray.png';
 import imgUser from '../../assets/images/img_user_gray.png';
 
 type ChallengeCardProps = {
+  // 루틴 ID
+  routineId?: number;
+  
   // 유저 정보
   userName: string;
   userProfileImage?: string;
@@ -25,6 +28,7 @@ type ChallengeCardProps = {
 };
 
 const RoutineFeedCard = ({
+  routineId,
   userName,
   userProfileImage,
   createdAt,
@@ -121,7 +125,7 @@ const RoutineFeedCard = ({
       {/* 4. 하단 자세히보기 링크 */}
       <div className="flex justify-end mt-3">
         <button 
-          onClick={onClickDetail ?? (() => navigate('/routine/detail'))}
+          onClick={onClickDetail ?? (() => navigate(`/routine/detail/${routineId}`))}
           className="flex items-center text-xs text-gray-500 hover:text-gray-600 transition-colors"
         >
           자세히보기

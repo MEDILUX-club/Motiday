@@ -15,7 +15,7 @@ type SubLayoutProps = {
 
   footer?: {
     // 어떤 타입을 쓸지 결정
-    type: 'double-button' | 'single-button' | 'toggle' | 'none';
+    type: 'double-button' | 'single-button' | 'toggle' | 'toggle-with-button' | 'none';
     
     /* [버튼 관련 Props] */
     text?: string;             
@@ -27,7 +27,11 @@ type SubLayoutProps = {
     
     toggleActive?: 'left' | 'right'; 
     // 매개변수가 있는 함수 타입으로 변경
-    onToggle?: (side: 'left' | 'right') => void; 
+    onToggle?: (side: 'left' | 'right') => void;
+    
+    /* [토글+버튼 타입용] */
+    actionButtonText?: string;
+    onActionButton?: () => void;
   };
 };
 
@@ -76,6 +80,19 @@ const SubLayout = ({ children, header, footer }: SubLayoutProps) => {
                 active={footerConfig.toggleActive ?? 'left'} 
                 onToggle={footerConfig.onToggle ?? (() => {})} 
               />
+            </div>
+          )}
+
+          {/* CASE 4: 토글 + 버튼 */}
+          {footerConfig.type === 'toggle-with-button' && (
+            <div className="flex items-center justify-between w-full gap-3">
+              <ToggleButton 
+                active={footerConfig.toggleActive ?? 'left'} 
+                onToggle={footerConfig.onToggle ?? (() => {})} 
+              />
+              <Button variant="primary" onClick={footerConfig.onActionButton}>
+                {footerConfig.actionButtonText || '참여하기'}
+              </Button>
             </div>
           )}
 

@@ -139,6 +139,7 @@ const ClubListPage = () => {
           filteredRoutines.map((routine, idx) => (
             <RoutineFeedCard
               key={routine.routineId}
+              routineId={routine.routineId}
               userName="김모티" // TODO: 작성자 정보 API에서 받아오기
               userProfileImage={routineProfile}
               createdAt={routine.createdAt ? new Date(routine.createdAt).toLocaleDateString() : ''}

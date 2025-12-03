@@ -33,7 +33,7 @@ const App = () => {
       <Route path="/routine/list" element={<RoutineListPage />} />
 
       {/* 5. 동아리 상세 */}
-      <Route path="/routine/detail" element={<RoutineDetailPage />} />
+      <Route path="/routine/detail/:routineId" element={<RoutineDetailPage />} />
 
       {/* 6. 동아리 등록 */}
       <Route path="/routine/register" element={<RoutineRegisterPage />} />
