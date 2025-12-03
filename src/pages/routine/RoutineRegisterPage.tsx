@@ -1,15 +1,103 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SubLayout from '../../components/layout/SubLayout';
 import InputField from '../../components/common/InputField';
 import mainPlaceholder from '../../assets/images/img_plus_box.png';
+import { useAuthStore } from '../../store/authStore';
+import usePostRoutines from '../../hooks/queries/usePostRoutines';
+import type { RoutineCategory, RoutineDifficulty } from '../../types/routine';
+
+const CATEGORY_MAP: Record<string, RoutineCategory> = {
+  exercise: 'EXERCISE',
+  study: 'STUDY',
+  reading: 'READING',
+};
+
+const DIFFICULTY_MAP: Record<string, RoutineDifficulty> = {
+  Easy: 'EASY',
+  Standard: 'STANDARD',
+  Hard: 'HARD',
+};
 
 const RoutineRegisterPage = () => {
   const navigate = useNavigate();
+  const authUser = useAuthStore((state) => state.user);
+  const localProfileImage = useAuthStore((state) => state.localProfileImage);
+
+  // 폼 상태
   const [category, setCategory] = useState<'exercise' | 'study' | 'reading'>('exercise');
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState(''); // 목적
+  const [difficulty, setDifficulty] = useState<'Easy' | 'Standard' | 'Hard'>('Easy');
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [mainImage, setMainImage] = useState<string>(''); // 메인 사진 (로컬)
+  const mainImageInputRef = useRef<HTMLInputElement>(null);
 
+  // 메인 사진 선택 핸들러
+  const handleMainImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // 이미지 파일인지 확인
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 선택할 수 있습니다.');
+      return;
+    }
+
+    // 파일을 base64로 변환하여 미리보기
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      setMainImage(result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // 루틴 생성 mutation
+  const { mutate: createRoutine, isPending } = usePostRoutines({
+    onSuccess: () => {
+      alert('루틴이 등록되었습니다!');
+      navigate('/routine/list');
+    },
+    onError: (error) => {
+      alert(error.response?.data?.message || '루틴 등록에 실패했습니다.');
+    },
+  });
+
+  // 날짜 포맷 (YYYY-MM-DD)
+  const formatDate = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  // 등록 핸들러
+  const handleSubmit = () => {
+    if (!title.trim()) {
+      alert('제목을 입력해주세요.');
+      return;
+    }
+    if (!description.trim()) {
+      alert('목적을 입력해주세요.');
+      return;
+    }
+    if (!selectedDate) {
+      alert('시작 날짜를 선택해주세요.');
+      return;
+    }
+
+    createRoutine({
+      title: title.trim(),
+      description: description.trim(),
+      category: CATEGORY_MAP[category],
+      difficulty: DIFFICULTY_MAP[difficulty],
+      startDate: formatDate(selectedDate),
+    });
+  };
+
+  // 달력 계산
   const startOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
   const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
   const leadingEmpty = startOfMonth.getDay();
@@ -18,23 +106,33 @@ const RoutineRegisterPage = () => {
     ...Array.from({ length: daysInMonth }, (_, i) => i + 1),
   ];
 
+  // 프로필 이미지
+  // @ts-expect-error Temporary: backend User type mismatch
+  const profileImage = localProfileImage || authUser?.profileImageUrl;
+
   return (
     <SubLayout
       header={{ title: '루틴' }}
       footer={{
         type: 'double-button',
         onCancel: () => navigate('/routine/list'),
-        onOk: () => {},
+        onOk: handleSubmit,
         cancelText: '취소',
-        okText: '등록',
+        okText: isPending ? '등록 중...' : '등록',
       }}
     >
       <div className="space-y-4 bg-gray-50 rounded-2xl p-4">
         {/* 프로필/분류 영역 */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-full bg-gray-400" />
-            <div className="text-base font-semibold text-gray-900">김모티</div>
+            <div className="h-12 w-12 rounded-full bg-gray-400 overflow-hidden">
+              {profileImage && (
+                <img src={profileImage} alt="프로필" className="h-full w-full object-cover" />
+              )}
+            </div>
+            <div className="text-base font-semibold text-gray-900">
+              {authUser?.nickname || '닉네임'}
+            </div>
           </div>
 
           <div className="space-y-2">
@@ -64,13 +162,27 @@ const RoutineRegisterPage = () => {
           </div>
         </div>
 
-        {/* 메인 사진 영역 */}
+        {/* 메인 사진 영역 (로컬 미리보기, 서버 업로드 API 구현 시 연동 예정) */}
         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 space-y-3">
           <div className="text-sm font-semibold text-gray-800">*메인 사진</div>
-            <div className="h-48 w-full max-w-[150px] rounded-2xl bg-gray-400 flex items-center justify-center">
+          <input
+            ref={mainImageInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleMainImageSelect}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => mainImageInputRef.current?.click()}
+            className="h-48 w-full max-w-[150px] rounded-2xl bg-gray-400 flex items-center justify-center overflow-hidden"
+          >
+            {mainImage ? (
+              <img src={mainImage} alt="메인 사진" className="h-full w-full object-cover" />
+            ) : (
               <img src={mainPlaceholder} alt="메인 사진 추가" className="h-8 w-8 object-contain" />
-            </div>
-          
+            )}
+          </button>
         </div>
 
         {/* 입력 필드 영역 */}
@@ -80,6 +192,8 @@ const RoutineRegisterPage = () => {
             <InputField
               variant="gray"
               placeholder="예시) 일주일에 3번씩 운동 인증할사람 구해요"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
 
@@ -88,9 +202,12 @@ const RoutineRegisterPage = () => {
             <InputField
               variant="gray"
               placeholder="예시) 아침 루틴 형성"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
+          {/* 효과 필드 - API 미지원으로 주석 처리
           <div className="space-y-2">
             <div className="text-sm font-semibold text-gray-800">*효과</div>
             <InputField
@@ -98,16 +215,22 @@ const RoutineRegisterPage = () => {
               placeholder="예시) 하루 컨디션과 집중력 향상"
             />
           </div>
+          */}
 
           {/* 인증 주기 */}
           <div className="space-y-2">
             <div className="text-sm font-semibold text-gray-800">*인증 주기</div>
             <div className="flex items-center gap-2">
-              <select className="h-12 w-24 rounded-lg border border-gray-300 bg-white px-2 text-sm font-semibold text-gray-700">
-                <option>Easy</option>
-                <option>Standard</option>
-                <option>Hard</option>
+              <select
+                value={difficulty}
+                onChange={(e) => setDifficulty(e.target.value as typeof difficulty)}
+                className="h-12 w-24 rounded-lg border border-gray-300 bg-white px-2 text-sm font-semibold text-gray-700"
+              >
+                <option value="Easy">Easy</option>
+                <option value="Standard">Standard</option>
+                <option value="Hard">Hard</option>
               </select>
+              {/* 횟수 필드 - API 미지원으로 주석 처리
               <div className="flex items-center gap-1">
                 <InputField
                   variant="white"
@@ -117,6 +240,7 @@ const RoutineRegisterPage = () => {
                 />
                 <span className="text-sm text-gray-700">회</span>
               </div>
+              */}
             </div>
           </div>
 
@@ -186,7 +310,7 @@ const RoutineRegisterPage = () => {
             </div>
           </div>
 
-          {/* 예상 보상 */}
+          {/* 예상 보상 (API 미지원 - UI만 표시) */}
           <div className="space-y-2">
             <div className="text-sm font-semibold text-gray-800">*예상 보상</div>
             <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3">

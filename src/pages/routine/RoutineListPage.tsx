@@ -10,91 +10,92 @@ import routineProfile from '../../assets/images/img_HomeFeedCard_profile.png';
 import homeFeedImage from '../../assets/images/img_HomeFeedCard.png';
 import homeFeedImageStudy from '../../assets/images/img_HomeFeedCard_study.png';
 import homeFeedImageBook from '../../assets/images/img_HomeFeedCard_book.png';
+import useGetRoutines from '../../hooks/queries/useGetRoutines';
+import useGetRoutinesRecruiting from '../../hooks/queries/useGetRoutinesRecruiting';
+import useGetRoutinesClosed from '../../hooks/queries/useGetRoutinesClosed';
+import useGetUserRoutines from '../../hooks/queries/useGetUserRoutines';
+import { useAuthStore } from '../../store/authStore';
+import type { RoutineCategory } from '../../types/routine';
+
+// 탭 타입을 API 카테고리로 변환
+const TAB_TO_CATEGORY: Record<TabType, RoutineCategory> = {
+  exercise: 'EXERCISE',
+  study: 'STUDY',
+  reading: 'READING',
+};
+
+// 난이도 변환 (API → UI)
+const DIFFICULTY_DISPLAY: Record<string, 'Easy' | 'Normal' | 'Hard'> = {
+  EASY: 'Easy',
+  STANDARD: 'Normal',
+  HARD: 'Hard',
+};
 
 const ClubListPage = () => {
   const navigate = useNavigate();
+  const userId = useAuthStore((state) => state.user?.userId);
   const [activeTab, setActiveTab] = useState<TabType>('exercise');
   const [filter, setFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
+
+  const category = TAB_TO_CATEGORY[activeTab];
+
+  // API 호출 - 필터별 루틴 조회
+  const { data: allRoutines = [], isLoading: isLoadingAll } = useGetRoutines(category, {
+    enabled: filter === 'all',
+  });
+  const { data: recruitingRoutines = [], isLoading: isLoadingRecruiting } = useGetRoutinesRecruiting(category, {
+    enabled: filter === 'recruit',
+  });
+  const { data: closedRoutines = [], isLoading: isLoadingClosed } = useGetRoutinesClosed(category, {
+    enabled: filter === 'closed',
+  });
+  const { data: userRoutines = [], isLoading: isLoadingUser } = useGetUserRoutines(userId ?? 0, {
+    enabled: filter === 'ongoing' && Boolean(userId),
+  });
+
+  // 참여중 루틴은 카테고리로 프론트에서 필터링 (API에 category 파라미터 없음)
+  const ongoingRoutines = userRoutines.filter((r) => r.category === category);
+
+  // 현재 필터에 따른 데이터 선택
+  const getRoutinesByFilter = () => {
+    switch (filter) {
+      case 'all': return allRoutines;
+      case 'recruit': return recruitingRoutines;
+      case 'closed': return closedRoutines;
+      case 'ongoing': return ongoingRoutines;
+      default: return [];
+    }
+  };
+  const getLoadingByFilter = () => {
+    switch (filter) {
+      case 'all': return isLoadingAll;
+      case 'recruit': return isLoadingRecruiting;
+      case 'closed': return isLoadingClosed;
+      case 'ongoing': return isLoadingUser;
+      default: return false;
+    }
+  };
+  const routines = getRoutinesByFilter();
+  const isLoading = getLoadingByFilter();
+
   const contentImageMap: Record<TabType, string> = {
     exercise: homeFeedImage,
     study: homeFeedImageStudy,
     reading: homeFeedImageBook,
   };
-  const feedsByTab: Record<
-    TabType,
-    Array<{
-      id: string;
-      title: string;
-      difficulty: 'Easy' | 'Normal' | 'Hard';
-      frequency: string;
-      startDate: string;
-      currentParticipants: number;
-      maxParticipants: number;
-    }>
-  > = {
-    exercise: [
-      {
-        id: 'ex1',
-        title: '매주 3회 운동 루틴',
-        difficulty: 'Easy',
-        frequency: '주 3회 인증',
-        startDate: '25.12.12 ~',
-        currentParticipants: 12,
-        maxParticipants: 30,
-      },
-      {
-        id: 'ex2',
-        title: '아침 러닝 5km 루틴',
-        difficulty: 'Normal',
-        frequency: '주 4회 인증',
-        startDate: '25.12.15 ~',
-        currentParticipants: 8,
-        maxParticipants: 20,
-      },
-    ],
-    study: [
-      {
-        id: 'st1',
-        title: '매주 3회 독서 루틴',
-        difficulty: 'Easy',
-        frequency: '주 3회 인증',
-        startDate: '25.12.12 ~',
-        currentParticipants: 10,
-        maxParticipants: 25,
-      },
-      {
-        id: 'st2',
-        title: '야간 공부 루틴',
-        difficulty: 'Hard',
-        frequency: '주 5회 인증',
-        startDate: '25.12.20 ~',
-        currentParticipants: 5,
-        maxParticipants: 15,
-      },
-    ],
-    reading: [
-      {
-        id: 'rd1',
-        title: '매주 3회 독서 루틴',
-        difficulty: 'Easy',
-        frequency: '주 3회 인증',
-        startDate: '25.12.12 ~',
-        currentParticipants: 9,
-        maxParticipants: 18,
-      },
-      {
-        id: 'rd2',
-        title: '소설 20분 독서 인증',
-        difficulty: 'Normal',
-        frequency: '주 4회 인증',
-        startDate: '25.12.18 ~',
-        currentParticipants: 7,
-        maxParticipants: 20,
-      },
-    ],
+
+  // 날짜 포맷 (YYYY-MM-DD → YY.MM.DD ~)
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const yy = String(date.getFullYear()).slice(2);
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yy}.${mm}.${dd} ~`;
   };
-  const filteredFeeds = feedsByTab[activeTab].filter(({ title }) =>
+
+  // 검색 필터링
+  const filteredRoutines = routines.filter(({ title }) =>
     title.toLowerCase().includes(searchQuery.trim().toLowerCase())
   );
 
@@ -130,22 +131,28 @@ const ClubListPage = () => {
           onChange={(e) => setSearchQuery(e.target.value)}
         />
 
-        {filteredFeeds.map((feed, idx) => (
-          <RoutineFeedCard
-            key={feed.id}
-            userName="김모티"
-            userProfileImage={routineProfile}
-            createdAt="16분 전"
-            title={feed.title}
-            thumbnailImage={contentImageMap[activeTab]}
-            isHot={idx === 0}
-            difficulty={feed.difficulty}
-            frequency={feed.frequency}
-            startDate={feed.startDate}
-            currentParticipants={feed.currentParticipants}
-            maxParticipants={feed.maxParticipants}
-          />
-        ))}
+        {isLoading ? (
+          <div className="text-center text-gray-500 py-8">로딩 중...</div>
+        ) : filteredRoutines.length === 0 ? (
+          <div className="text-center text-gray-500 py-8">등록된 루틴이 없습니다.</div>
+        ) : (
+          filteredRoutines.map((routine, idx) => (
+            <RoutineFeedCard
+              key={routine.routineId}
+              userName="김모티" // TODO: 작성자 정보 API에서 받아오기
+              userProfileImage={routineProfile}
+              createdAt={routine.createdAt ? new Date(routine.createdAt).toLocaleDateString() : ''}
+              title={routine.title}
+              thumbnailImage={contentImageMap[activeTab]}
+              isHot={idx === 0}
+              difficulty={DIFFICULTY_DISPLAY[routine.difficulty] || 'Easy'}
+              frequency={`${routine.difficulty} 난이도`}
+              startDate={formatDate(routine.startDate)}
+              currentParticipants={routine.currentParticipants}
+              maxParticipants={routine.maxParticipants}
+            />
+          ))
+        )}
       </div>
       <div className="fixed bottom-[110px] right-5 z-50">
         <button
