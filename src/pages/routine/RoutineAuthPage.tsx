@@ -67,23 +67,10 @@ const RoutineAuthPage = () => {
   const setLocalFeedImage = useFeedStore((state) => state.setLocalFeedImage);
 
   // 피드 생성 mutation
-  const { mutate: createFeed, isPending } = usePostFeeds({
-    onSuccess: (data) => {
-      // 로컬에 피드 이미지 저장 (이미지 업로드 API 연동 전까지 사용)
-      if (images[0] && data.feedId) {
-        setLocalFeedImage(data.feedId, images[0]);
-      }
-      alert('인증이 완료되었습니다!');
-      navigate('/home'); // 홈 피드로 이동
-    },
-    onError: (error) => {
-      const message = error.response?.data?.message || '인증 등록에 실패했습니다.';
-      alert(message);
-    },
-  });
+  const { mutateAsync: createFeed, isPending } = usePostFeeds();
 
   // 피드 등록 핸들러
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedRoutineId) {
       if (userRoutines.length === 0) {
         alert('참여 중인 루틴이 없습니다. 먼저 루틴에 참여해주세요.');
@@ -105,12 +92,30 @@ const RoutineAuthPage = () => {
     // 2. 응답받은 imageUrl을 createFeed에 전달
     const tempImageUrl = 'pending_upload'; // 임시 값
 
-    createFeed({
-      routineId: selectedRoutineId,
-      imageUrl: tempImageUrl,
-      caption: content,
-      isSharedToRoutine: isShareEnabled,
-    });
+    try {
+      const res = await createFeed({
+        routineId: selectedRoutineId,
+        imageUrl: tempImageUrl,
+        caption: content,
+        isSharedToRoutine: isShareEnabled,
+      });
+
+      // 로컬에 피드 이미지 저장 (이미지 업로드 API 연동 전까지 사용)
+      if (images[0] && res.feedId) {
+        setLocalFeedImage(res.feedId, images[0]);
+      }
+
+      alert('인증이 완료되었습니다!');
+      navigate('/home', { replace: true }); // 홈 피드로 이동
+    } catch (error) {
+      // error가 AxiosError 타입(axios import 필요)로 가정
+      let message = '인증 등록에 실패했습니다.';
+      if (error && typeof error === 'object' && 'response' in error && error.response && typeof error.response === 'object') {
+        // @ts-expect-error: axios 에러 타입 추론 어려움
+        message = error.response.data?.message || message;
+      }
+      alert(message);
+    }
   };
 
   // 사진이 없으면 다시 카메라로 돌려보냄 (예외처리)
