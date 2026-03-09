@@ -4,8 +4,8 @@ import { auth } from '../firebase';
 import type { SocialType } from '../types/auth';
 
 const provider = new GoogleAuthProvider();
-const KAKAO_JS_KEY = 'b7a1d55e1cd02bc8e3e391874bcf8171';
-const NAVER_CLIENT_ID = 'VTNbiMfoBmfIubz2rh1t';
+const KAKAO_JS_KEY = import.meta.env.VITE_KAKAO_JS_KEY;
+const NAVER_CLIENT_ID = import.meta.env.VITE_NAVER_CLIENT_ID;
 const NAVER_REDIRECT_URI = 'http://localhost:5173/login';
 
 declare global {

@@ -6,13 +6,13 @@ import type { Auth } from "firebase/auth";
 //import { getAnalytics } from "firebase/analytics";
 // 본인의 config 값
 const firebaseConfig = {
-  apiKey: "AIzaSyAV6OmwCvdrNFSv2Pa5ZO7zOiUJOd8u4sk",
-  authDomain: "motiday-3c95c.firebaseapp.com",
-  projectId: "motiday-3c95c",
-  storageBucket: "motiday-3c95c.firebasestorage.app",
-  messagingSenderId: "909984494226",
-  appId: "1:909984494226:web:053c63f02575e15803ac4b",
-  measurementId: "G-Q3DSZ34QMP"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 // Initialize Firebase
